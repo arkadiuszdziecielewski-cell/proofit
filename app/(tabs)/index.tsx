@@ -110,7 +110,7 @@ export default function ArenaScreen() {
             </View>
           </MotiView>
           <View style={styles.headerTitleContainer}>
-            <MotiText from={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} style={styles.logoText}>PROOFIT</MotiText>
+            <MotiText from={{ opacity: 0, translateX: -20 }} animate={{ opacity: 1, translateX: 0 }} style={styles.logoText}>PROOFIT</MotiText>
             <Text style={styles.headerSubtitle}>Elite Betting Exchange</Text>
           </View>
           <TouchableOpacity style={styles.profileButton}>

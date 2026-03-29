@@ -93,7 +93,7 @@ export default function ProfileScreen() {
               style={[styles.onlineIndicator, { borderColor: colors.accent }]} 
             />
           </MotiView>
-          <MotiText from={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={styles.userName}>{USER_STATS.name}</MotiText>
+          <MotiText from={{ opacity: 0, translateY: 10 }} animate={{ opacity: 1, translateY: 0 }} style={styles.userName}>{USER_STATS.name}</MotiText>
           <View style={styles.rankBadge}>
             <MaterialCommunityIcons name="star-circle" size={16} color={colors.gold} />
             <Text style={[styles.rankText, { color: colors.gold }]}>{USER_STATS.rank}</Text>

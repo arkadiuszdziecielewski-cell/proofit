@@ -76,8 +76,8 @@ export default function AddTipScreen() {
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <MotiText 
-          from={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+          from={{ opacity: 0, translateY: -20 }}
+          animate={{ opacity: 1, translateY: 0 }}
           style={[styles.title, { color: colors.text }]}
         >
           VERIFIER
@@ -120,9 +120,9 @@ export default function AddTipScreen() {
         {step === 1 && (
           <MotiView
             key="s1"
-            from={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
+            from={{ opacity: 0, translateX: 50 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            exit={{ opacity: 0, translateX: -50 }}
             style={styles.pane}
           >
             <Text style={[styles.paneTitle, { color: colors.text }]}>Discipline</Text>
@@ -149,9 +149,9 @@ export default function AddTipScreen() {
         {step === 2 && selectedSport && (
           <MotiView
             key="s2"
-            from={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
+            from={{ opacity: 0, translateX: 50 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            exit={{ opacity: 0, translateX: -50 }}
             style={styles.pane}
           >
             <TouchableOpacity onPress={() => setStep(1)} style={styles.backLink}>
@@ -160,7 +160,7 @@ export default function AddTipScreen() {
             </TouchableOpacity>
             <Text style={[styles.paneTitle, { color: colors.text }]}>League</Text>
             {LEAGUES[selectedSport].map((league, i) => (
-              <MotiView key={league} from={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 50 }}>
+              <MotiView key={league} from={{ opacity: 0, translateY: 10 }} animate={{ opacity: 1, translateY: 0 }} transition={{ delay: i * 50 }}>
                 <TouchableOpacity
                   style={[styles.leagueRow, { backgroundColor: colors.card, borderColor: colors.border }]}
                   onPress={() => handleLeagueSelect(league)}
@@ -178,9 +178,9 @@ export default function AddTipScreen() {
         {step === 3 && (
           <MotiView
             key="s3"
-            from={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
+            from={{ opacity: 0, translateX: 50 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            exit={{ opacity: 0, translateX: -50 }}
             style={styles.pane}
           >
             {isLoading ? (
