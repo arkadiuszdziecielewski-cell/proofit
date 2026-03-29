@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Platform, Dimensions } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { width } = Dimensions.get('window');
 
 const SPORTS = [
   { id: 'soccer', name: 'Piłka Nożna', icon: 'sports-soccer' },
@@ -29,8 +32,8 @@ const MOCK_MATCHES: Record<string, any[]> = {
 };
 
 export default function AddTipScreen() {
-  const colorScheme = useColorScheme();
-  const tintColor = Colors[colorScheme ?? 'light'].tint;
+  const colorScheme = useColorScheme() ?? 'light';
+  const colors = Colors[colorScheme];
 
   const [step, setStep] = useState(1);
   const [selectedSport, setSelectedSport] = useState<string | null>(null);
@@ -47,7 +50,6 @@ export default function AddTipScreen() {
   const handleLeagueSelect = (league: string) => {
     setSelectedLeague(league);
     setIsLoading(true);
-    // Simulate API fetch
     setTimeout(() => {
       setIsLoading(false);
       setStep(3);
@@ -68,30 +70,46 @@ export default function AddTipScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Weryfikator Typów</Text>
-        <Text style={styles.subtitle}>Wybierz mecz i dodaj typ. Kursy są pobierane w czasie rzeczywistym.</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Weryfikator</Text>
+        <Text style={[styles.subtitle, { color: colors.muted }]}>
+          Kursy mrożone w czasie rzeczywistym. Brak możliwości manipulacji.
+        </Text>
       </View>
 
-      <View style={styles.stepIndicator}>
+      <View style={styles.stepContainer}>
         {[1, 2, 3, 4].map((s) => (
-          <View key={s} style={[styles.stepDot, step >= s && { backgroundColor: tintColor }]} />
+          <View key={s} style={styles.stepWrapper}>
+            <View style={[
+              styles.stepCircle, 
+              { backgroundColor: step >= s ? colors.tint : colors.card, borderColor: step >= s ? colors.tint : colors.border }
+            ]}>
+              {step > s ? (
+                <Ionicons name="checkmark" size={16} color="#fff" />
+              ) : (
+                <Text style={[styles.stepNumber, { color: step >= s ? '#fff' : colors.muted }]}>{s}</Text>
+              )}
+            </View>
+            {s < 4 && <View style={[styles.stepLine, { backgroundColor: step > s ? colors.tint : colors.border }]} />}
+          </View>
         ))}
       </View>
 
       {step === 1 && (
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Krok 1: Wybierz dyscyplinę</Text>
+          <Text style={[styles.sectionLabel, { color: colors.text }]}>Wybierz dyscyplinę</Text>
           <View style={styles.grid}>
             {SPORTS.map((sport) => (
               <TouchableOpacity
                 key={sport.id}
-                style={styles.sportCard}
+                style={[styles.sportCard, { backgroundColor: colors.card, borderColor: colors.border }]}
                 onPress={() => handleSportSelect(sport.id)}
               >
-                <MaterialIcons name={sport.icon as any} size={40} color={tintColor} />
-                <Text style={styles.sportName}>{sport.name}</Text>
+                <View style={[styles.sportIconWrapper, { backgroundColor: colors.tint + '15' }]}>
+                  <MaterialIcons name={sport.icon as any} size={32} color={colors.tint} />
+                </View>
+                <Text style={[styles.sportName, { color: colors.text }]}>{sport.name}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -101,18 +119,18 @@ export default function AddTipScreen() {
       {step === 2 && selectedSport && (
         <View style={styles.section}>
           <TouchableOpacity onPress={() => setStep(1)} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={20} color={tintColor} />
-            <Text style={[styles.backText, { color: tintColor }]}>Wróć do dyscyplin</Text>
+            <Ionicons name="arrow-back" size={20} color={colors.tint} />
+            <Text style={[styles.backText, { color: colors.tint }]}>Dyscypliny</Text>
           </TouchableOpacity>
-          <Text style={styles.sectionLabel}>Krok 2: Wybierz ligę</Text>
+          <Text style={[styles.sectionLabel, { color: colors.text }]}>Wybierz ligę</Text>
           {LEAGUES[selectedSport].map((league) => (
             <TouchableOpacity
               key={league}
-              style={styles.listItem}
+              style={[styles.listItem, { backgroundColor: colors.card, borderColor: colors.border }]}
               onPress={() => handleLeagueSelect(league)}
             >
-              <Text style={styles.listItemText}>{league}</Text>
-              <Ionicons name="chevron-forward" size={20} color="#ccc" />
+              <Text style={[styles.listItemText, { color: colors.text }]}>{league}</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.muted} />
             </TouchableOpacity>
           ))}
         </View>
@@ -120,38 +138,32 @@ export default function AddTipScreen() {
 
       {step === 3 && isLoading && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={tintColor} />
-          <Text style={styles.loadingText}>Pobieranie kursów rynkowych...</Text>
+          <ActivityIndicator size="large" color={colors.tint} />
+          <Text style={[styles.loadingText, { color: colors.muted }]}>Pobieranie kursów rynkowych...</Text>
         </View>
       )}
 
       {step === 3 && !isLoading && selectedLeague && (
         <View style={styles.section}>
           <TouchableOpacity onPress={() => setStep(2)} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={20} color={tintColor} />
-            <Text style={[styles.backText, { color: tintColor }]}>Wróć do lig</Text>
+            <Ionicons name="arrow-back" size={20} color={colors.tint} />
+            <Text style={[styles.backText, { color: colors.tint }]}>Ligi</Text>
           </TouchableOpacity>
-          <Text style={styles.sectionLabel}>Krok 3: Wybierz mecz</Text>
+          <Text style={[styles.sectionLabel, { color: colors.text }]}>Wybierz mecz</Text>
           {MOCK_MATCHES[selectedLeague]?.map((match) => (
             <TouchableOpacity
               key={match.id}
-              style={styles.matchItem}
+              style={[styles.matchCard, { backgroundColor: colors.card, borderColor: colors.border }]}
               onPress={() => handleMatchSelect(match)}
             >
-              <Text style={styles.matchTeams}>{match.teams}</Text>
-              <View style={styles.oddsRow}>
-                <View style={styles.miniOdd}>
-                  <Text style={styles.miniOddLabel}>1</Text>
-                  <Text style={styles.miniOddValue}>{match.odds['1']}</Text>
-                </View>
-                <View style={styles.miniOdd}>
-                  <Text style={styles.miniOddLabel}>X</Text>
-                  <Text style={styles.miniOddValue}>{match.odds['X']}</Text>
-                </View>
-                <View style={styles.miniOdd}>
-                  <Text style={styles.miniOddLabel}>2</Text>
-                  <Text style={styles.miniOddValue}>{match.odds['2']}</Text>
-                </View>
+              <Text style={[styles.matchTeams, { color: colors.text }]}>{match.teams}</Text>
+              <View style={styles.oddsPreview}>
+                {Object.entries(match.odds).map(([key, val]) => (
+                  <View key={key} style={[styles.miniOdd, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                    <Text style={[styles.miniOddKey, { color: colors.muted }]}>{key}</Text>
+                    <Text style={[styles.miniOddVal, { color: colors.success }]}>{val as string}</Text>
+                  </View>
+                ))}
               </View>
             </TouchableOpacity>
           ))}
@@ -161,42 +173,52 @@ export default function AddTipScreen() {
       {step === 4 && selectedMatch && (
         <View style={styles.section}>
           <TouchableOpacity onPress={() => setStep(3)} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={20} color={tintColor} />
-            <Text style={[styles.backText, { color: tintColor }]}>Wróć do meczów</Text>
+            <Ionicons name="arrow-back" size={20} color={colors.tint} />
+            <Text style={[styles.backText, { color: colors.tint }]}>Mecze</Text>
           </TouchableOpacity>
-          <Text style={styles.sectionLabel}>Krok 4: Wybierz typ i zatwierdź</Text>
-          <View style={styles.finalCard}>
-            <Text style={styles.finalMatchTitle}>{selectedMatch.teams}</Text>
-            <Text style={styles.finalLeague}>{selectedLeague}</Text>
+          <Text style={[styles.sectionLabel, { color: colors.text }]}>Twój Typ</Text>
+          
+          <View style={[styles.finalCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <LinearGradient
+              colors={[colors.tint + '20', 'transparent']}
+              style={styles.finalCardGradient}
+            >
+              <Text style={[styles.finalLeague, { color: colors.tint }]}>{selectedLeague}</Text>
+              <Text style={[styles.finalTeams, { color: colors.text }]}>{selectedMatch.teams}</Text>
+            </LinearGradient>
 
-            <View style={styles.marketSelector}>
-              <Text style={styles.marketLabel}>Wybierz zdarzenie:</Text>
+            <View style={styles.marketGrid}>
               {Object.entries(selectedMatch.odds).map(([market, odds]) => (
                 <TouchableOpacity
                   key={market}
-                  style={[styles.marketOption, selectedMarket === market && { borderColor: tintColor, backgroundColor: 'rgba(0,122,255,0.05)' }]}
+                  style={[
+                    styles.marketButton, 
+                    { backgroundColor: colors.background, borderColor: selectedMarket === market ? colors.tint : colors.border }
+                  ]}
                   onPress={() => setSelectedMarket(market)}
                 >
-                  <Text style={styles.marketName}>{market === '1' ? 'Wygrana Gospodarzy' : market === 'X' ? 'Remis' : 'Wygrana Gości'}</Text>
-                  <Text style={[styles.marketOdds, { color: tintColor }]}>{odds as string}</Text>
+                  <Text style={[styles.marketLabel, { color: colors.muted }]}>
+                    {market === '1' ? 'Gospodarze' : market === 'X' ? 'Remis' : 'Goście'}
+                  </Text>
+                  <Text style={[styles.marketOdds, { color: colors.text }]}>{odds as string}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            <View style={styles.warningBox}>
-              <Ionicons name="shield-checkmark" size={20} color="#4CAF50" />
-              <Text style={styles.warningText}>Kurs został zamrożony. Nie możesz go zmienić.</Text>
+            <View style={[styles.verifiedBox, { backgroundColor: colors.success + '10' }]}>
+              <MaterialIcons name="verified-user" size={20} color={colors.success} />
+              <Text style={[styles.verifiedText, { color: colors.success }]}>Kurs zweryfikowany i zamrożony</Text>
             </View>
 
             <TouchableOpacity
-              style={[styles.submitButton, (!selectedMarket) && { opacity: 0.5 }, { backgroundColor: tintColor }]}
+              style={[styles.publishButton, { backgroundColor: selectedMarket ? colors.tint : colors.muted + '40' }]}
               disabled={!selectedMarket}
               onPress={() => {
-                alert('Typ został dodany i zweryfikowany!');
+                alert('Typ został dodany!');
                 reset();
               }}
             >
-              <Text style={styles.submitButtonText}>Zatwierdź i opublikuj</Text>
+              <Text style={styles.publishButtonText}>Opublikuj Typ</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -210,38 +232,57 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 20,
-    paddingTop: 10,
+    padding: 24,
+    paddingTop: 20,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '900',
+    letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: 14,
-    color: '#888',
+    fontWeight: '500',
     marginTop: 6,
     lineHeight: 20,
   },
-  stepIndicator: {
+  stepContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 10,
+    paddingHorizontal: 30,
+    marginBottom: 20,
   },
-  stepDot: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#eee',
-    marginHorizontal: 4,
+  stepWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  stepCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  stepNumber: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  stepLine: {
+    width: (width - 60 - (32 * 4)) / 3,
+    height: 2,
+    marginHorizontal: -2,
   },
   section: {
-    padding: 20,
+    paddingHorizontal: 24,
+    paddingBottom: 40,
   },
   sectionLabel: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '800',
     marginBottom: 20,
+    letterSpacing: -0.3,
   },
   grid: {
     flexDirection: 'row',
@@ -250,59 +291,78 @@ const styles = StyleSheet.create({
   },
   sportCard: {
     width: '48%',
-    backgroundColor: 'rgba(128,128,128,0.05)',
-    borderRadius: 16,
+    borderRadius: 24,
     padding: 20,
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 16,
+    borderWidth: 1,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  sportIconWrapper: {
+    width: 60,
+    height: 60,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   sportName: {
-    marginTop: 10,
-    fontWeight: '600',
     fontSize: 14,
+    fontWeight: '700',
   },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 16,
   },
   backText: {
-    marginLeft: 5,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
+    marginLeft: 4,
   },
   listItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: 'rgba(128,128,128,0.03)',
-    borderRadius: 12,
-    marginBottom: 10,
+    padding: 20,
+    borderRadius: 20,
+    marginBottom: 12,
+    borderWidth: 1,
   },
   listItemText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '700',
   },
   loadingContainer: {
-    padding: 40,
+    padding: 60,
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 15,
-    color: '#888',
+    marginTop: 16,
+    fontWeight: '600',
   },
-  matchItem: {
-    padding: 16,
-    backgroundColor: 'rgba(128,128,128,0.03)',
-    borderRadius: 12,
-    marginBottom: 12,
+  matchCard: {
+    padding: 20,
+    borderRadius: 24,
+    marginBottom: 16,
+    borderWidth: 1,
   },
   matchTeams: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontSize: 18,
+    fontWeight: '800',
+    marginBottom: 16,
   },
-  oddsRow: {
+  oddsPreview: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -310,85 +370,95 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    padding: 8,
-    borderRadius: 6,
+    padding: 10,
+    borderRadius: 12,
     marginHorizontal: 4,
     borderWidth: 1,
-    borderColor: '#eee',
   },
-  miniOddLabel: {
+  miniOddKey: {
     fontSize: 12,
-    color: '#888',
+    fontWeight: '700',
   },
-  miniOddValue: {
+  miniOddVal: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '800',
   },
   finalCard: {
-    padding: 20,
-    backgroundColor: 'rgba(128,128,128,0.05)',
-    borderRadius: 20,
+    borderRadius: 30,
+    borderWidth: 1,
+    overflow: 'hidden',
   },
-  finalMatchTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+  finalCardGradient: {
+    padding: 24,
+    alignItems: 'center',
   },
   finalLeague: {
-    fontSize: 14,
-    color: '#888',
-    textAlign: 'center',
-    marginTop: 4,
-    marginBottom: 20,
+    fontSize: 12,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 8,
   },
-  marketSelector: {
-    marginBottom: 20,
+  finalTeams: {
+    fontSize: 22,
+    fontWeight: '900',
+    textAlign: 'center',
+  },
+  marketGrid: {
+    padding: 20,
+  },
+  marketButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 18,
+    borderRadius: 18,
+    borderWidth: 2,
+    marginBottom: 10,
   },
   marketLabel: {
     fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 12,
-    color: '#666',
-  },
-  marketOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 8,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  marketName: {
-    fontWeight: '500',
+    fontWeight: '700',
   },
   marketOdds: {
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: '900',
   },
-  warningBox: {
+  verifiedBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(76,175,80,0.1)',
+    justifyContent: 'center',
+    marginHorizontal: 20,
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 12,
     marginBottom: 20,
   },
-  warningText: {
+  verifiedText: {
     fontSize: 12,
-    color: '#2E7D32',
+    fontWeight: '700',
     marginLeft: 8,
-    fontWeight: '500',
   },
-  submitButton: {
+  publishButton: {
+    margin: 20,
+    marginTop: 0,
     padding: 18,
-    borderRadius: 12,
+    borderRadius: 18,
     alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#10B981',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
   },
-  submitButtonText: {
+  publishButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '900',
   },
 });

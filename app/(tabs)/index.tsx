@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { StyleSheet, FlatList, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, FlatList, ScrollView, TouchableOpacity, Image, Platform } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const TOP_TYPERS = [
   { id: '1', name: 'Jan Bet', yield: '+24.5%', tips: 120, winRate: '68%', rank: 1, avatar: 'https://i.pravatar.cc/150?u=1' },
@@ -20,42 +21,48 @@ const HOT_TIPS = [
 const FILTERS = ['Wszystkie', 'Piłka Nożna', 'Tenis', 'Koszykówka', 'E-sport'];
 
 export default function ArenaScreen() {
-  const colorScheme = useColorScheme();
-  const tintColor = Colors[colorScheme ?? 'light'].tint;
+  const colorScheme = useColorScheme() ?? 'light';
+  const colors = Colors[colorScheme];
 
   const renderTyper = ({ item }: { item: typeof TOP_TYPERS[0] }) => (
-    <TouchableOpacity style={styles.typerCard}>
-      <View style={styles.rankBadge}>
-        <Text style={styles.rankText}>{item.rank}</Text>
+    <TouchableOpacity style={[styles.typerCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={[styles.rankBadge, { backgroundColor: item.rank === 1 ? colors.gold : colors.muted + '20' }]}>
+        <Text style={[styles.rankText, { color: item.rank === 1 ? '#000' : colors.text }]}>{item.rank}</Text>
       </View>
       <Image source={{ uri: item.avatar }} style={styles.avatar} />
       <View style={styles.typerInfo}>
-        <Text style={styles.typerName}>{item.name}</Text>
-        <Text style={styles.typerStats}>{item.tips} typów • {item.winRate} winrate</Text>
+        <Text style={[styles.typerName, { color: colors.text }]}>{item.name}</Text>
+        <Text style={[styles.typerStats, { color: colors.muted }]}>{item.tips} typów • {item.winRate} winrate</Text>
       </View>
       <View style={styles.yieldContainer}>
-        <Text style={styles.yieldText}>{item.yield}</Text>
-        <Text style={styles.yieldLabel}>Yield (30d)</Text>
+        <Text style={[styles.yieldText, { color: colors.success }]}>{item.yield}</Text>
+        <Text style={[styles.yieldLabel, { color: colors.muted }]}>Yield (30d)</Text>
       </View>
     </TouchableOpacity>
   );
 
   const renderHotTip = ({ item }: { item: typeof HOT_TIPS[0] }) => (
-    <TouchableOpacity style={styles.tipCard}>
+    <TouchableOpacity style={[styles.tipCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <View style={styles.tipHeader}>
-        <Text style={styles.leagueText}>{item.league}</Text>
-        <View style={styles.oddsBadge}>
-          <Text style={styles.oddsText}>{item.odds}</Text>
+        <View style={[styles.leagueBadge, { backgroundColor: colors.tint + '15' }]}>
+          <Text style={[styles.leagueText, { color: colors.tint }]}>{item.league}</Text>
+        </View>
+        <View style={[styles.oddsBadge, { backgroundColor: colors.success + '15' }]}>
+          <Text style={[styles.oddsText, { color: colors.success }]}>{item.odds}</Text>
         </View>
       </View>
-      <Text style={styles.matchText}>{item.match}</Text>
-      <Text style={styles.tipText}>Typ: {item.tip}</Text>
+      <Text style={[styles.matchText, { color: colors.text }]}>{item.match}</Text>
+      <View style={styles.tipDetailRow}>
+        <Text style={[styles.tipLabel, { color: colors.muted }]}>Typ:</Text>
+        <Text style={[styles.tipValue, { color: colors.text }]}>{item.tip}</Text>
+      </View>
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
       <View style={styles.tipFooter}>
         <View style={styles.buyerContainer}>
-          <FontAwesome5 name="users" size={12} color="#888" />
-          <Text style={styles.buyerText}>{item.buyers} kupiło</Text>
+          <FontAwesome5 name="users" size={12} color={colors.muted} />
+          <Text style={[styles.buyerText, { color: colors.muted }]}>{item.buyers} kupiło</Text>
         </View>
-        <TouchableOpacity style={[styles.buyButton, { backgroundColor: tintColor }]}>
+        <TouchableOpacity style={[styles.buyButton, { backgroundColor: colors.tint }]}>
           <Text style={styles.buyButtonText}>Odblokuj</Text>
         </TouchableOpacity>
       </View>
@@ -63,25 +70,37 @@ export default function ArenaScreen() {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Arena Liderów</Text>
-        <Text style={styles.subtitle}>Giełda zweryfikowanych typów</Text>
-      </View>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+      <LinearGradient
+        colors={[colors.tint + '20', 'transparent']}
+        style={styles.headerGradient}
+      >
+        <View style={styles.header}>
+          <Text style={[styles.title, { color: colors.text }]}>Arena Liderów</Text>
+          <Text style={[styles.subtitle, { color: colors.muted }]}>Jedyna giełda z gwarancją statystyk</Text>
+        </View>
+      </LinearGradient>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer} contentContainerStyle={styles.filterContent}>
         {FILTERS.map((filter, index) => (
-          <TouchableOpacity key={index} style={[styles.filterChip, index === 0 && { backgroundColor: tintColor }]}>
-            <Text style={[styles.filterText, index === 0 && { color: '#fff' }]}>{filter}</Text>
+          <TouchableOpacity 
+            key={index} 
+            style={[
+              styles.filterChip, 
+              { backgroundColor: index === 0 ? colors.tint : colors.card, borderColor: colors.border },
+              index === 0 && styles.activeFilterChip
+            ]}
+          >
+            <Text style={[styles.filterText, { color: index === 0 ? '#fff' : colors.muted }]}>{filter}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Top Typerzy (30 dni)</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Top Typerzy</Text>
           <TouchableOpacity>
-            <Text style={[styles.seeAll, { color: tintColor }]}>Zobacz ranking</Text>
+            <Text style={[styles.seeAll, { color: colors.tint }]}>Ranking</Text>
           </TouchableOpacity>
         </View>
         <FlatList
@@ -94,8 +113,10 @@ export default function ArenaScreen() {
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Gorące Typy</Text>
-          <MaterialCommunityIcons name="fire" size={24} color="#FF4500" />
+          <View style={styles.row}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Gorące Typy</Text>
+            <MaterialCommunityIcons name="fire" size={24} color="#FF4500" style={{ marginLeft: 8 }} />
+          </View>
         </View>
         <FlatList
           data={HOT_TIPS}
@@ -112,138 +133,194 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerGradient: {
+    paddingTop: Platform.OS === 'ios' ? 20 : 10,
+    paddingBottom: 20,
+  },
   header: {
-    padding: 20,
-    paddingTop: 10,
+    paddingHorizontal: 20,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '900',
+    letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#888',
+    fontSize: 15,
     marginTop: 4,
+    fontWeight: '500',
   },
   filterContainer: {
-    paddingHorizontal: 15,
     marginBottom: 20,
   },
+  filterContent: {
+    paddingHorizontal: 15,
+  },
   filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 25,
     marginHorizontal: 5,
+    borderWidth: 1,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  activeFilterChip: {
+    shadowOpacity: 0.3,
+    shadowColor: '#10B981',
   },
   filterText: {
-    fontWeight: '600',
+    fontWeight: '700',
+    fontSize: 14,
   },
   section: {
     paddingHorizontal: 20,
-    marginBottom: 25,
+    marginBottom: 30,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 16,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
   seeAll: {
-    fontWeight: '600',
+    fontWeight: '700',
+    fontSize: 14,
   },
   typerCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: 'rgba(128,128,128,0.05)',
-    marginBottom: 10,
+    padding: 14,
+    borderRadius: 18,
+    borderWidth: 1,
+    marginBottom: 12,
   },
   rankBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#FFD700',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
   rankText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#000',
+    fontSize: 14,
+    fontWeight: '800',
   },
   avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    marginRight: 12,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 14,
+    borderWidth: 2,
+    borderColor: 'rgba(128,128,128,0.1)',
   },
   typerInfo: {
     flex: 1,
   },
   typerName: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 17,
+    fontWeight: '700',
   },
   typerStats: {
-    fontSize: 12,
-    color: '#888',
+    fontSize: 13,
+    marginTop: 2,
   },
   yieldContainer: {
     alignItems: 'flex-end',
   },
   yieldText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#4CAF50',
+    fontSize: 18,
+    fontWeight: '900',
   },
   yieldLabel: {
     fontSize: 10,
-    color: '#888',
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   tipCard: {
-    padding: 15,
-    borderRadius: 16,
+    padding: 18,
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(128,128,128,0.1)',
-    marginBottom: 12,
+    marginBottom: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   tipHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 14,
+  },
+  leagueBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   leagueText: {
-    fontSize: 12,
-    color: '#888',
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '800',
+    textTransform: 'uppercase',
   },
   oddsBadge: {
-    backgroundColor: '#E8F5E9',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   oddsText: {
-    color: '#2E7D32',
-    fontWeight: 'bold',
-    fontSize: 12,
+    fontWeight: '900',
+    fontSize: 13,
   },
   matchText: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontSize: 20,
+    fontWeight: '800',
+    marginBottom: 8,
+    letterSpacing: -0.3,
   },
-  tipText: {
+  tipDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  tipLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginRight: 6,
+  },
+  tipValue: {
     fontSize: 15,
-    color: '#555',
-    marginBottom: 12,
+    fontWeight: '700',
+  },
+  divider: {
+    height: 1,
+    marginBottom: 16,
+    opacity: 0.5,
   },
   tipFooter: {
     flexDirection: 'row',
@@ -255,18 +332,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buyerText: {
-    fontSize: 12,
-    color: '#888',
-    marginLeft: 5,
+    fontSize: 13,
+    fontWeight: '600',
+    marginLeft: 6,
   },
   buyButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 12,
   },
   buyButtonText: {
     color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 13,
+    fontWeight: '800',
+    fontSize: 14,
   },
 });
