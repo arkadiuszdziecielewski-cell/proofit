@@ -70,42 +70,42 @@ export default function AddTipScreen() {
     setSelectedMarket(null);
   };
 
-  const stepWidth = (width - 48 - (36 * 4)) / 3;
+  const stepWidth = (width - 48 - (40 * 4)) / 3;
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
         <MotiText 
-          from={{ opacity: 0, translateX: -20 }}
-          animate={{ opacity: 1, translateX: 0 }}
+          from={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
           style={[styles.title, { color: colors.text }]}
         >
-          Verifier
+          VERIFIER
         </MotiText>
         <Text style={[styles.subtitle, { color: colors.muted }]}>
-          Submit your expert analysis. Our system freezes odds to prevent any statistical manipulation.
+          Market-linked verification. Instant settlement.
         </Text>
       </View>
 
-      <View style={styles.stepContainer}>
+      <View style={styles.stepperContainer}>
         {[1, 2, 3, 4].map((s) => (
-          <View key={s} style={styles.stepWrapper}>
+          <View key={s} style={styles.stepItem}>
             <MotiView 
               animate={{ 
                 backgroundColor: step >= s ? colors.tint : colors.card,
                 borderColor: step >= s ? colors.tint : colors.border,
-                scale: step === s ? 1.2 : 1
+                scale: step === s ? 1.15 : 1
               }}
               style={styles.stepCircle}
             >
               {step > s ? (
-                <Ionicons name="checkmark-sharp" size={18} color="#fff" />
+                <Ionicons name="checkmark-sharp" size={20} color="#fff" />
               ) : (
-                <Text style={[styles.stepNumber, { color: step >= s ? '#fff' : colors.muted }]}>{s}</Text>
+                <Text style={[styles.stepNum, { color: step >= s ? '#fff' : colors.muted }]}>{s}</Text>
               )}
             </MotiView>
             {s < 4 && (
-              <View style={[styles.stepLine, { width: stepWidth, backgroundColor: colors.border }]}>
+              <View style={[styles.stepBar, { width: stepWidth, backgroundColor: colors.border }]}>
                 <MotiView 
                   animate={{ width: step > s ? '100%' : '0%' }}
                   style={{ height: '100%', backgroundColor: colors.tint }} 
@@ -119,14 +119,14 @@ export default function AddTipScreen() {
       <AnimatePresence exitBeforeEnter>
         {step === 1 && (
           <MotiView
-            key="step1"
-            from={{ opacity: 0, translateX: 50 }}
-            animate={{ opacity: 1, translateX: 0 }}
-            exit={{ opacity: 0, translateX: -50 }}
-            style={styles.section}
+            key="s1"
+            from={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            style={styles.pane}
           >
-            <Text style={[styles.sectionLabel, { color: colors.text }]}>Select Discipline</Text>
-            <View style={styles.grid}>
+            <Text style={[styles.paneTitle, { color: colors.text }]}>Discipline</Text>
+            <View style={styles.sportsGrid}>
               {SPORTS.map((sport) => (
                 <TouchableOpacity
                   key={sport.id}
@@ -134,12 +134,12 @@ export default function AddTipScreen() {
                   onPress={() => handleSportSelect(sport.id)}
                 >
                   <LinearGradient
-                    colors={[colors.tint + '10', 'transparent']}
-                    style={styles.sportIconWrapper}
+                    colors={[colors.tint + '15', 'transparent']}
+                    style={styles.sportIconBox}
                   >
-                    <MaterialIcons name={sport.icon as any} size={38} color={colors.tint} />
+                    <MaterialIcons name={sport.icon as any} size={40} color={colors.tint} />
                   </LinearGradient>
-                  <Text style={[styles.sportName, { color: colors.text }]}>{sport.name}</Text>
+                  <Text style={[styles.sportLabel, { color: colors.text }]}>{sport.name}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -148,31 +148,26 @@ export default function AddTipScreen() {
 
         {step === 2 && selectedSport && (
           <MotiView
-            key="step2"
-            from={{ opacity: 0, translateX: 50 }}
-            animate={{ opacity: 1, translateX: 0 }}
-            exit={{ opacity: 0, translateX: -50 }}
-            style={styles.section}
+            key="s2"
+            from={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            style={styles.pane}
           >
-            <TouchableOpacity onPress={() => setStep(1)} style={styles.backButton}>
-              <Ionicons name="arrow-back-circle" size={24} color={colors.tint} />
-              <Text style={[styles.backText, { color: colors.tint }]}>Disciplines</Text>
+            <TouchableOpacity onPress={() => setStep(1)} style={styles.backLink}>
+              <Ionicons name="chevron-back" size={20} color={colors.accent} />
+              <Text style={[styles.backText, { color: colors.accent }]}>BACK</Text>
             </TouchableOpacity>
-            <Text style={[styles.sectionLabel, { color: colors.text }]}>Available Leagues</Text>
-            {LEAGUES[selectedSport].map((league, idx) => (
-              <MotiView
-                key={league}
-                from={{ opacity: 0, translateY: 10 }}
-                animate={{ opacity: 1, translateY: 0 }}
-                transition={{ delay: idx * 50 }}
-              >
+            <Text style={[styles.paneTitle, { color: colors.text }]}>League</Text>
+            {LEAGUES[selectedSport].map((league, i) => (
+              <MotiView key={league} from={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 50 }}>
                 <TouchableOpacity
-                  style={[styles.listItem, { backgroundColor: colors.card, borderColor: colors.border }]}
+                  style={[styles.leagueRow, { backgroundColor: colors.card, borderColor: colors.border }]}
                   onPress={() => handleLeagueSelect(league)}
                 >
-                  <Text style={[styles.listItemText, { color: colors.text }]}>{league}</Text>
-                  <View style={[styles.chevronWrapper, { backgroundColor: colors.tint + '10' }]}>
-                    <Ionicons name="chevron-forward" size={18} color={colors.tint} />
+                  <Text style={[styles.leagueName, { color: colors.text }]}>{league}</Text>
+                  <View style={[styles.leagueIcon, { backgroundColor: colors.accent + '15' }]}>
+                    <Ionicons name="arrow-forward" size={18} color={colors.accent} />
                   </View>
                 </TouchableOpacity>
               </MotiView>
@@ -182,46 +177,41 @@ export default function AddTipScreen() {
 
         {step === 3 && (
           <MotiView
-            key="step3"
-            from={{ opacity: 0, translateX: 50 }}
-            animate={{ opacity: 1, translateX: 0 }}
-            exit={{ opacity: 0, translateX: -50 }}
-            style={styles.section}
+            key="s3"
+            from={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            style={styles.pane}
           >
             {isLoading ? (
-              <View style={styles.loadingContainer}>
+              <View style={styles.loader}>
                 <MotiView
                   animate={{ rotate: '360deg' }}
-                  transition={{ loop: true, duration: 1000, type: 'timing', easing: Easing.linear }}
+                  transition={{ loop: true, duration: 800, type: 'timing', easing: Easing.linear }}
                 >
-                  <Ionicons name="sync" size={48} color={colors.tint} />
+                  <MaterialCommunityIcons name="loading" size={60} color={colors.tint} />
                 </MotiView>
-                <Text style={[styles.loadingText, { color: colors.muted }]}>Scanning live markets...</Text>
+                <Text style={[styles.loaderText, { color: colors.muted }]}>FETCHING MARKET RATES...</Text>
               </View>
             ) : (
               <>
-                <TouchableOpacity onPress={() => setStep(2)} style={styles.backButton}>
-                  <Ionicons name="arrow-back-circle" size={24} color={colors.tint} />
-                  <Text style={[styles.backText, { color: colors.tint }]}>Leagues</Text>
+                <TouchableOpacity onPress={() => setStep(2)} style={styles.backLink}>
+                  <Ionicons name="chevron-back" size={20} color={colors.accent} />
+                  <Text style={[styles.backText, { color: colors.accent }]}>BACK</Text>
                 </TouchableOpacity>
-                <Text style={[styles.sectionLabel, { color: colors.text }]}>Active Events</Text>
-                {MOCK_MATCHES[selectedLeague!]?.map((match, idx) => (
-                  <MotiView
-                    key={match.id}
-                    from={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: idx * 100 }}
-                  >
+                <Text style={[styles.paneTitle, { color: colors.text }]}>Match</Text>
+                {MOCK_MATCHES[selectedLeague!]?.map((match, i) => (
+                  <MotiView key={match.id} from={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 100 }}>
                     <TouchableOpacity
                       style={[styles.matchCard, { backgroundColor: colors.card, borderColor: colors.border }]}
                       onPress={() => handleMatchSelect(match)}
                     >
-                      <Text style={[styles.matchTeams, { color: colors.text }]}>{match.teams}</Text>
-                      <View style={styles.oddsPreview}>
-                        {Object.entries(match.odds).map(([key, val]) => (
-                          <View key={key} style={[styles.miniOdd, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                            <Text style={[styles.miniOddKey, { color: colors.muted }]}>{key}</Text>
-                            <Text style={[styles.miniOddVal, { color: colors.success }]}>{val as string}</Text>
+                      <Text style={[styles.matchInfo, { color: colors.text }]}>{match.teams}</Text>
+                      <View style={styles.oddsLine}>
+                        {Object.entries(match.odds).map(([k, v]) => (
+                          <View key={k} style={[styles.oddSmall, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                            <Text style={[styles.oddSmallK, { color: colors.muted }]}>{k}</Text>
+                            <Text style={[styles.oddSmallV, { color: colors.success }]}>{v as string}</Text>
                           </View>
                         ))}
                       </View>
@@ -235,33 +225,33 @@ export default function AddTipScreen() {
 
         {step === 4 && selectedMatch && (
           <MotiView
-            key="step4"
+            key="s4"
             from={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            style={styles.section}
+            style={styles.pane}
           >
-            <TouchableOpacity onPress={() => setStep(3)} style={styles.backButton}>
-              <Ionicons name="arrow-back-circle" size={24} color={colors.tint} />
-              <Text style={[styles.backText, { color: colors.tint }]}>Events</Text>
+            <TouchableOpacity onPress={() => setStep(3)} style={styles.backLink}>
+              <Ionicons name="chevron-back" size={20} color={colors.accent} />
+              <Text style={[styles.backText, { color: colors.accent }]}>BACK</Text>
             </TouchableOpacity>
             
-            <View style={[styles.finalCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <View style={[styles.confirmCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
               <LinearGradient
                 colors={[colors.tint, colors.accent]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.finalCardGradient}
+                style={styles.confirmHeader}
               >
-                <Text style={styles.finalLeague}>{selectedLeague}</Text>
-                <Text style={styles.finalTeams}>{selectedMatch.teams}</Text>
+                <Text style={styles.confirmLeague}>{selectedLeague}</Text>
+                <Text style={styles.confirmTeams}>{selectedMatch.teams}</Text>
               </LinearGradient>
 
-              <View style={styles.marketGrid}>
+              <View style={styles.pickGrid}>
                 {Object.entries(selectedMatch.odds).map(([market, odds]) => (
                   <TouchableOpacity
                     key={market}
                     style={[
-                      styles.marketButton, 
+                      styles.pickBtn, 
                       { 
                         backgroundColor: selectedMarket === market ? colors.tint + '10' : colors.background, 
                         borderColor: selectedMarket === market ? colors.tint : colors.border 
@@ -270,16 +260,16 @@ export default function AddTipScreen() {
                     onPress={() => setSelectedMarket(market)}
                   >
                     <View>
-                      <Text style={[styles.marketLabel, { color: colors.muted }]}>
+                      <Text style={[styles.pickLab, { color: colors.muted }]}>
                         {market === '1' ? 'HOME' : market === 'X' ? 'DRAW' : 'AWAY'}
                       </Text>
-                      <Text style={[styles.marketName, { color: colors.text }]}>
-                        {market === '1' ? selectedMatch.teams.split(' vs ')[0] : market === 'X' ? 'Draw' : selectedMatch.teams.split(' vs ')[1]}
+                      <Text style={[styles.pickName, { color: colors.text }]}>
+                        {market === '1' ? selectedMatch.teams.split(' vs ')[0] : market === 'X' ? 'Tie' : selectedMatch.teams.split(' vs ')[1]}
                       </Text>
                     </View>
                     <MotiText 
-                      animate={{ scale: selectedMarket === market ? 1.2 : 1 }}
-                      style={[styles.marketOdds, { color: colors.tint }]}
+                      animate={{ scale: selectedMarket === market ? 1.25 : 1 }}
+                      style={[styles.pickOdds, { color: colors.tint }]}
                     >
                       {odds as string}
                     </MotiText>
@@ -287,20 +277,27 @@ export default function AddTipScreen() {
                 ))}
               </View>
 
-              <View style={[styles.verifiedBox, { backgroundColor: colors.success + '10', borderColor: colors.success + '30' }]}>
-                <MaterialCommunityIcons name="shield-check-outline" size={22} color={colors.success} />
-                <Text style={[styles.verifiedText, { color: colors.success }]}>CRYPTO-VERIFIED ODDS</Text>
+              <View style={[styles.auditBox, { backgroundColor: colors.success + '10', borderColor: colors.success + '30' }]}>
+                <MaterialCommunityIcons name="shield-lock" size={24} color={colors.success} />
+                <Text style={[styles.auditText, { color: colors.success }]}>REAL-TIME AUDIT SECURED</Text>
               </View>
 
               <TouchableOpacity
-                style={[styles.publishButton, { backgroundColor: selectedMarket ? colors.tint : colors.muted + '20' }]}
+                style={[styles.submitBtn, { backgroundColor: selectedMarket ? colors.tint : colors.muted + '20' }]}
                 disabled={!selectedMarket}
                 onPress={() => {
-                  alert('Analysis published to the blockchain!');
+                  alert('Analysis locked and published!');
                   reset();
                 }}
               >
-                <Text style={styles.publishButtonText}>PUBLISH ANALYSIS</Text>
+                <LinearGradient
+                  colors={selectedMarket ? [colors.tint, colors.accent] : ['transparent', 'transparent']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.submitBtnGrad}
+                >
+                  <Text style={styles.submitBtnText}>LOCK ANALYSIS</Text>
+                </LinearGradient>
               </TouchableOpacity>
             </View>
           </MotiView>
@@ -315,257 +312,261 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    padding: 24,
-    paddingTop: 30,
+    padding: 28,
+    paddingTop: 40,
   },
   title: {
-    fontSize: 36,
+    fontSize: 40,
     fontWeight: '900',
-    letterSpacing: -1.5,
+    letterSpacing: -2,
   },
   subtitle: {
-    fontSize: 15,
-    fontWeight: '500',
-    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 8,
     lineHeight: 24,
   },
-  stepContainer: {
+  stepperContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     paddingHorizontal: 24,
-    marginBottom: 40,
+    marginBottom: 45,
   },
-  stepWrapper: {
+  stepItem: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   stepCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 14,
     borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1,
+    zIndex: 2,
   },
-  stepNumber: {
-    fontSize: 15,
+  stepNum: {
+    fontSize: 16,
     fontWeight: '900',
   },
-  stepLine: {
-    height: 3,
+  stepBar: {
+    height: 4,
     marginHorizontal: -2,
     borderRadius: 2,
     overflow: 'hidden',
   },
-  section: {
-    paddingHorizontal: 24,
-    paddingBottom: 50,
+  pane: {
+    paddingHorizontal: 28,
+    paddingBottom: 60,
   },
-  sectionLabel: {
-    fontSize: 24,
+  paneTitle: {
+    fontSize: 26,
     fontWeight: '900',
-    marginBottom: 24,
+    marginBottom: 28,
     letterSpacing: -0.5,
   },
-  grid: {
+  sportsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
   sportCard: {
     width: '48%',
-    borderRadius: 32,
-    padding: 24,
+    borderRadius: 35,
+    padding: 28,
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 18,
     borderWidth: 1,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.1,
-        shadowRadius: 20,
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.15,
+        shadowRadius: 25,
       },
       android: {
-        elevation: 8,
+        elevation: 10,
       },
     }),
   },
-  sportIconWrapper: {
-    width: 72,
-    height: 72,
-    borderRadius: 24,
+  sportIconBox: {
+    width: 80,
+    height: 80,
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
-  sportName: {
+  sportLabel: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '900',
     letterSpacing: 0.5,
   },
-  backButton: {
+  backLink: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 28,
   },
   backText: {
-    fontSize: 15,
-    fontWeight: '800',
-    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: '900',
+    marginLeft: 6,
+    letterSpacing: 1,
   },
-  listItem: {
+  leagueRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 24,
-    borderRadius: 24,
-    marginBottom: 14,
+    padding: 28,
+    borderRadius: 30,
+    marginBottom: 16,
     borderWidth: 1,
   },
-  listItemText: {
-    fontSize: 18,
-    fontWeight: '800',
+  leagueName: {
+    fontSize: 19,
+    fontWeight: '900',
   },
-  chevronWrapper: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
+  leagueIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loadingContainer: {
-    padding: 100,
+  loader: {
+    padding: 120,
     alignItems: 'center',
   },
-  loadingText: {
-    marginTop: 24,
-    fontWeight: '800',
-    fontSize: 16,
-    letterSpacing: 0.5,
+  loaderText: {
+    marginTop: 30,
+    fontWeight: '900',
+    fontSize: 14,
+    letterSpacing: 2,
   },
   matchCard: {
-    padding: 24,
-    borderRadius: 32,
-    marginBottom: 18,
+    padding: 28,
+    borderRadius: 35,
+    marginBottom: 20,
     borderWidth: 1,
   },
-  matchTeams: {
-    fontSize: 20,
+  matchInfo: {
+    fontSize: 21,
     fontWeight: '900',
-    marginBottom: 24,
+    marginBottom: 28,
     letterSpacing: -0.5,
   },
-  oddsPreview: {
+  oddsLine: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  miniOdd: {
+  oddSmall: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 14,
-    borderRadius: 16,
-    marginHorizontal: 4,
+    padding: 16,
+    borderRadius: 18,
+    marginHorizontal: 5,
     borderWidth: 1,
   },
-  miniOddKey: {
+  oddSmallK: {
     fontSize: 12,
     fontWeight: '900',
   },
-  miniOddVal: {
-    fontSize: 13,
+  oddSmallV: {
+    fontSize: 14,
     fontWeight: '900',
   },
-  finalCard: {
-    borderRadius: 40,
+  confirmCard: {
+    borderRadius: 45,
     borderWidth: 1,
     overflow: 'hidden',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 20 },
-        shadowOpacity: 0.2,
-        shadowRadius: 40,
+        shadowOffset: { width: 0, height: 30 },
+        shadowOpacity: 0.3,
+        shadowRadius: 50,
       },
       android: {
-        elevation: 15,
+        elevation: 20,
       },
     }),
   },
-  finalCardGradient: {
-    padding: 40,
+  confirmHeader: {
+    padding: 45,
     alignItems: 'center',
   },
-  finalLeague: {
+  confirmLeague: {
     fontSize: 14,
     fontWeight: '900',
-    color: 'rgba(255,255,255,0.8)',
+    color: 'rgba(255,255,255,0.85)',
     textTransform: 'uppercase',
-    letterSpacing: 2,
-    marginBottom: 12,
+    letterSpacing: 3,
+    marginBottom: 15,
   },
-  finalTeams: {
-    fontSize: 28,
+  confirmTeams: {
+    fontSize: 30,
     fontWeight: '900',
     color: '#fff',
     textAlign: 'center',
     letterSpacing: -1,
   },
-  marketGrid: {
-    padding: 24,
+  pickGrid: {
+    padding: 28,
   },
-  marketButton: {
+  pickBtn: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 22,
-    borderRadius: 24,
+    padding: 24,
+    borderRadius: 28,
     borderWidth: 2,
-    marginBottom: 14,
+    marginBottom: 16,
   },
-  marketLabel: {
+  pickLab: {
     fontSize: 11,
     fontWeight: '900',
-    marginBottom: 4,
-    letterSpacing: 1,
+    marginBottom: 6,
+    letterSpacing: 1.5,
   },
-  marketName: {
-    fontSize: 17,
-    fontWeight: '800',
-  },
-  marketOdds: {
-    fontSize: 24,
+  pickName: {
+    fontSize: 18,
     fontWeight: '900',
   },
-  verifiedBox: {
+  pickOdds: {
+    fontSize: 26,
+    fontWeight: '900',
+  },
+  auditBox: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 24,
-    padding: 16,
-    borderRadius: 20,
-    marginBottom: 24,
+    marginHorizontal: 28,
+    padding: 20,
+    borderRadius: 24,
+    marginBottom: 28,
     borderWidth: 1,
   },
-  verifiedText: {
+  auditText: {
     fontSize: 12,
     fontWeight: '900',
-    marginLeft: 10,
-    letterSpacing: 1,
+    marginLeft: 12,
+    letterSpacing: 1.5,
   },
-  publishButton: {
-    margin: 24,
+  submitBtn: {
+    margin: 28,
     marginTop: 0,
-    padding: 22,
-    borderRadius: 24,
+    borderRadius: 28,
+    overflow: 'hidden',
+  },
+  submitBtnGrad: {
+    padding: 24,
     alignItems: 'center',
   },
-  publishButtonText: {
+  submitBtnText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: '900',
-    letterSpacing: 1,
+    letterSpacing: 2,
   },
 });

@@ -7,7 +7,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { LineChart } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MotiView, MotiText, AnimatePresence } from 'moti';
+import { MotiView, MotiText } from 'moti';
 
 const USER_STATS = {
   name: 'Jan Bet',
@@ -63,95 +63,76 @@ export default function ProfileScreen() {
   );
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
       <LinearGradient
         colors={[colors.tint, colors.accent]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.headerBackground}
+        style={styles.header}
       >
         <View style={styles.headerTop}>
-          <MotiView from={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
-            <TouchableOpacity style={styles.iconButton}>
-              <Ionicons name="share-social-outline" size={22} color="#fff" />
-            </TouchableOpacity>
-          </MotiView>
-          <MotiView from={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
-            <TouchableOpacity style={styles.iconButton}>
-              <Ionicons name="settings-outline" size={22} color="#fff" />
-            </TouchableOpacity>
-          </MotiView>
+          <TouchableOpacity style={styles.headerIcon}>
+            <Ionicons name="share-social-outline" size={22} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.headerIcon}>
+            <Ionicons name="settings-outline" size={22} color="#fff" />
+          </TouchableOpacity>
         </View>
 
-        <View style={styles.profileInfo}>
+        <View style={styles.profileSection}>
           <MotiView
             from={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: 'spring' }}
-            style={styles.avatarContainer}
+            style={styles.avatarWrapper}
           >
             <Image source={{ uri: USER_STATS.avatar }} style={styles.avatar} />
             <MotiView 
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ loop: true, duration: 2000 }}
-              style={[styles.onlineBadge, { borderColor: colors.accent }]} 
+              style={[styles.onlineIndicator, { borderColor: colors.accent }]} 
             />
           </MotiView>
-          <MotiText
-            from={{ opacity: 0, translateY: 10 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            style={styles.name}
-          >
-            {USER_STATS.name}
-          </MotiText>
-          <MotiView 
-            from={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={[styles.rankBadge, { backgroundColor: 'rgba(0,0,0,0.4)' }]}
-          >
+          <MotiText from={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={styles.userName}>{USER_STATS.name}</MotiText>
+          <View style={styles.rankBadge}>
             <MaterialCommunityIcons name="star-circle" size={16} color={colors.gold} />
             <Text style={[styles.rankText, { color: colors.gold }]}>{USER_STATS.rank}</Text>
-          </MotiView>
+          </View>
         </View>
       </LinearGradient>
 
       <MotiView
-        from={{ opacity: 0, translateY: 30 }}
+        from={{ opacity: 0, translateY: 40 }}
         animate={{ opacity: 1, translateY: 0 }}
         transition={{ delay: 200 }}
-        style={[styles.statsContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
+        style={[styles.statsDashboard, { backgroundColor: colors.card, borderColor: colors.border }]}
       >
-        <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: colors.success }]}>{USER_STATS.yield}</Text>
-          <Text style={[styles.statLabel, { color: colors.muted }]}>YIELD</Text>
+        <View style={styles.statBox}>
+          <Text style={[styles.statVal, { color: colors.success }]}>{USER_STATS.yield}</Text>
+          <Text style={[styles.statLab, { color: colors.muted }]}>YIELD</Text>
         </View>
-        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-        <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: colors.text }]}>{USER_STATS.winRate}</Text>
-          <Text style={[styles.statLabel, { color: colors.muted }]}>WIN RATE</Text>
+        <View style={[styles.statSep, { backgroundColor: colors.border }]} />
+        <View style={styles.statBox}>
+          <Text style={[styles.statVal, { color: colors.text }]}>{USER_STATS.winRate}</Text>
+          <Text style={[styles.statLab, { color: colors.muted }]}>WIN RATE</Text>
         </View>
-        <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-        <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: colors.text }]}>{USER_STATS.avgOdds}</Text>
-          <Text style={[styles.statLabel, { color: colors.muted }]}>AVG ODDS</Text>
+        <View style={[styles.statSep, { backgroundColor: colors.border }]} />
+        <View style={styles.statBox}>
+          <Text style={[styles.statVal, { color: colors.text }]}>{USER_STATS.avgOdds}</Text>
+          <Text style={[styles.statLab, { color: colors.muted }]}>AVG ODDS</Text>
         </View>
       </MotiView>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Performance Curve</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Portfolio Growth</Text>
           <View style={[styles.periodBadge, { backgroundColor: colors.tint + '15' }]}>
             <Text style={[styles.periodText, { color: colors.tint }]}>LAST 30D</Text>
           </View>
         </View>
-        <MotiView
-          from={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 400 }}
-          style={[styles.chartWrapper, { backgroundColor: colors.card, borderColor: colors.border }]}
-        >
+        <View style={[styles.chartContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <LineChart
-            style={{ height: 180 }}
+            style={{ height: 160 }}
             data={CHART_DATA}
             svg={{ 
               stroke: colors.tint, 
@@ -161,14 +142,14 @@ export default function ProfileScreen() {
             contentInset={{ top: 20, bottom: 20, left: 10, right: 10 }}
             curve={shape.curveNatural}
           />
-        </MotiView>
+        </View>
       </View>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Verified Activity</Text>
           <TouchableOpacity style={styles.row}>
-            <Text style={[styles.seeMore, { color: colors.tint }]}>See All</Text>
+            <Text style={[styles.seeMore, { color: colors.tint }]}>Full Log</Text>
             <Ionicons name="chevron-forward" size={14} color={colors.tint} />
           </TouchableOpacity>
         </View>
@@ -187,56 +168,53 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  headerBackground: {
+  header: {
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: 70,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
+    paddingBottom: 80,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
   },
   headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : 30,
-    left: 0,
-    right: 0,
+    marginBottom: 20,
   },
-  iconButton: {
+  headerIcon: {
     width: 44,
     height: 44,
-    borderRadius: 14,
+    borderRadius: 15,
     backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
   },
-  profileInfo: {
+  profileSection: {
     alignItems: 'center',
   },
-  avatarContainer: {
+  avatarWrapper: {
     position: 'relative',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   avatar: {
     width: 120,
     height: 120,
-    borderRadius: 40,
+    borderRadius: 44,
     borderWidth: 4,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: 'rgba(255,255,255,0.25)',
   },
-  onlineBadge: {
+  onlineIndicator: {
     position: 'absolute',
-    bottom: 5,
-    right: 5,
+    bottom: 4,
+    right: 4,
     width: 24,
     height: 24,
     borderRadius: 12,
     backgroundColor: '#10B981',
     borderWidth: 4,
   },
-  name: {
+  userName: {
     fontSize: 32,
     fontWeight: '900',
     color: '#fff',
@@ -245,6 +223,7 @@ const styles = StyleSheet.create({
   rankBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
@@ -253,52 +232,52 @@ const styles = StyleSheet.create({
   rankText: {
     fontSize: 12,
     fontWeight: '900',
-    marginLeft: 6,
+    marginLeft: 8,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
   },
-  statsContainer: {
+  statsDashboard: {
     flexDirection: 'row',
     marginHorizontal: 24,
-    marginTop: -35,
-    borderRadius: 32,
+    marginTop: -40,
+    borderRadius: 35,
     padding: 28,
     borderWidth: 1,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 16 },
-        shadowOpacity: 0.15,
-        shadowRadius: 32,
+        shadowOffset: { width: 0, height: 15 },
+        shadowOpacity: 0.2,
+        shadowRadius: 30,
       },
       android: {
         elevation: 12,
       },
     }),
   },
-  statItem: {
+  statBox: {
     flex: 1,
     alignItems: 'center',
   },
-  statDivider: {
+  statSep: {
     width: 1,
     height: '70%',
     alignSelf: 'center',
     opacity: 0.3,
   },
-  statValue: {
+  statVal: {
     fontSize: 24,
     fontWeight: '900',
     letterSpacing: -0.5,
   },
-  statLabel: {
+  statLab: {
     fontSize: 10,
-    fontWeight: '800',
+    fontWeight: '900',
     marginTop: 8,
     letterSpacing: 1,
   },
   section: {
-    marginTop: 40,
+    marginTop: 45,
     paddingHorizontal: 24,
   },
   sectionHeader: {
@@ -323,10 +302,10 @@ const styles = StyleSheet.create({
   },
   periodText: {
     fontSize: 12,
-    fontWeight: '800',
+    fontWeight: '900',
   },
-  chartWrapper: {
-    borderRadius: 32,
+  chartContainer: {
+    borderRadius: 35,
     borderWidth: 1,
     padding: 24,
   },
@@ -337,6 +316,17 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     borderWidth: 1,
     marginBottom: 16,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.1,
+        shadowRadius: 15,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
   },
   historyIcon: {
     width: 52,
@@ -344,19 +334,19 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: 18,
   },
   historyContent: {
     flex: 1,
   },
   historyMatch: {
     fontSize: 17,
-    fontWeight: '800',
+    fontWeight: '900',
     letterSpacing: -0.3,
   },
   historyTip: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     marginTop: 4,
   },
   historyRight: {
@@ -374,7 +364,7 @@ const styles = StyleSheet.create({
   },
   seeMore: {
     fontSize: 14,
-    fontWeight: '800',
+    fontWeight: '900',
     marginRight: 4,
   },
 });
