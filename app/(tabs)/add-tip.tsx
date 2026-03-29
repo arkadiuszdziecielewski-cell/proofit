@@ -7,6 +7,7 @@ import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView, MotiText, AnimatePresence } from 'moti';
+import { Easing } from 'react-native-reanimated';
 
 const SPORTS = [
   { id: 'soccer', name: 'Football', icon: 'sports-soccer' },
@@ -191,7 +192,7 @@ export default function AddTipScreen() {
               <View style={styles.loadingContainer}>
                 <MotiView
                   animate={{ rotate: '360deg' }}
-                  transition={{ loop: true, duration: 1000, type: 'timing', easing: shape.curveLinear as any }}
+                  transition={{ loop: true, duration: 1000, type: 'timing', easing: Easing.linear }}
                 >
                   <Ionicons name="sync" size={48} color={colors.tint} />
                 </MotiView>
