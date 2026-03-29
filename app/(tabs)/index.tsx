@@ -36,6 +36,25 @@ export default function ArenaScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
 
+  const Logo = () => (
+    <View style={styles.logoContainer}>
+      <LinearGradient
+        colors={[colors.tint, colors.accent]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.logoIconBox}
+      >
+        <ShieldCheck size={22} color="#fff" strokeWidth={2.5} />
+      </LinearGradient>
+      <View style={styles.logoTextContainer}>
+        <Text style={[styles.logoText, { color: colors.text }]}>
+          PROO<Text style={{ color: colors.tint }}>FIT</Text>
+        </Text>
+        <View style={[styles.logoUnderline, { backgroundColor: colors.tint }]} />
+      </View>
+    </View>
+  );
+
   const renderTyperCard = ({ item, index }: { item: typeof TOP_TYPERS[0], index: number }) => (
     <MotiView
       from={{ opacity: 0, scale: 0.95 }}
@@ -96,13 +115,28 @@ export default function ArenaScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <View>
-            <Text style={[styles.greeting, { color: colors.muted }]}>Marketplace</Text>
-            <Text style={[styles.title, { color: colors.text }]}>The Arena</Text>
-          </View>
+          <Logo />
           <TouchableOpacity style={[styles.iconButton, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Search size={20} color={colors.text} />
           </TouchableOpacity>
+        </View>
+
+        <View style={styles.heroSection}>
+          <MotiText 
+            from={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            style={[styles.greeting, { color: colors.muted }]}
+          >
+            Elite Tips Marketplace
+          </MotiText>
+          <MotiText 
+            from={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 100 }}
+            style={[styles.title, { color: colors.text }]}
+          >
+            The Arena
+          </MotiText>
         </View>
 
         <View style={styles.section}>
@@ -149,6 +183,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 30,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoIconBox: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  logoTextContainer: {
+    justifyContent: 'center',
+  },
+  logoText: {
+    fontSize: 22,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+  },
+  logoUnderline: {
+    height: 3,
+    width: 12,
+    borderRadius: 2,
+    marginTop: -2,
+  },
+  heroSection: {
     paddingHorizontal: 20,
     marginBottom: 25,
   },

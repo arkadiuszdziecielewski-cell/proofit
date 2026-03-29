@@ -55,16 +55,34 @@ export default function AddTipScreen() {
     setSelectedMarket(null);
   };
 
+  const Logo = () => (
+    <View style={styles.logoContainer}>
+      <LinearGradient
+        colors={[colors.tint, colors.accent]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.logoIconBox}
+      >
+        <ShieldCheck size={18} color="#fff" strokeWidth={2.5} />
+      </LinearGradient>
+      <Text style={[styles.logoText, { color: colors.text }]}>
+        PROO<Text style={{ color: colors.tint }}>FIT</Text>
+      </Text>
+    </View>
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        {step > 1 && (
+        {step > 1 ? (
           <TouchableOpacity onPress={() => setStep(step - 1)} style={styles.backBtn}>
             <ArrowLeft size={24} color={colors.text} />
           </TouchableOpacity>
+        ) : (
+          <Logo />
         )}
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Add Tip</Text>
-        <View style={{ width: 24 }} />
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{step === 1 ? '' : 'Add Tip'}</Text>
+        <View style={{ width: step > 1 ? 24 : 0 }} />
       </View>
 
       <View style={styles.progressContainer}>
@@ -228,6 +246,23 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  logoText: {
+    fontSize: 18,
+    fontWeight: '900',
+    letterSpacing: -0.5,
   },
   backBtn: {
     padding: 4,

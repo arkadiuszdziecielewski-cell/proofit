@@ -42,11 +42,27 @@ export default function ProfileScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
 
+  const Logo = () => (
+    <View style={styles.logoContainer}>
+      <LinearGradient
+        colors={[colors.tint, colors.accent]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.logoIconBox}
+      >
+        <ShieldCheck size={18} color="#fff" strokeWidth={2.5} />
+      </LinearGradient>
+      <Text style={[styles.logoText, { color: colors.text }]}>
+        PROO<Text style={{ color: colors.tint }}>FIT</Text>
+      </Text>
+    </View>
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
+          <Logo />
           <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.card, borderColor: colors.border }]}>
             <Settings size={20} color={colors.text} />
           </TouchableOpacity>
@@ -158,9 +174,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 25,
   },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: '800',
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoIconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  logoText: {
+    fontSize: 18,
+    fontWeight: '900',
     letterSpacing: -0.5,
   },
   iconBtn: {
