@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
+import { StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Platform, useWindowDimensions, ActivityIndicator } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
@@ -7,6 +7,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { LineChart } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MotiView, MotiText, AnimatePresence } from 'moti';
 
 const USER_STATS = {
   name: 'Jan Bet',
@@ -33,26 +34,32 @@ export default function ProfileScreen() {
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
 
-  const renderHistoryItem = ({ item }: { item: typeof HISTORY[0] }) => (
-    <View style={[styles.historyCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <View style={[styles.historyIcon, { backgroundColor: item.result === 'win' ? colors.success + '15' : colors.error + '15' }]}>
-        <Ionicons 
-          name={item.result === 'win' ? "trending-up" : "trending-down"} 
-          size={20} 
-          color={item.result === 'win' ? colors.success : colors.error} 
-        />
-      </View>
-      <View style={styles.historyContent}>
-        <Text style={[styles.historyMatch, { color: colors.text }]}>{item.match}</Text>
-        <Text style={[styles.historyTip, { color: colors.muted }]}>{item.tip} @ {item.odds}</Text>
-      </View>
-      <View style={styles.historyRight}>
-        <Text style={[styles.historyResult, { color: item.result === 'win' ? colors.success : colors.error }]}>
-          {item.result === 'win' ? 'WIN' : 'LOSS'}
-        </Text>
-        <Text style={[styles.historyDate, { color: colors.muted }]}>{item.date}</Text>
-      </View>
-    </View>
+  const renderHistoryItem = ({ item, index }: { item: typeof HISTORY[0], index: number }) => (
+    <MotiView
+      from={{ opacity: 0, translateY: 20 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ delay: index * 100 }}
+    >
+      <TouchableOpacity style={[styles.historyCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <View style={[styles.historyIcon, { backgroundColor: item.result === 'win' ? colors.success + '15' : colors.error + '15' }]}>
+          <Ionicons 
+            name={item.result === 'win' ? "trending-up" : "trending-down"} 
+            size={20} 
+            color={item.result === 'win' ? colors.success : colors.error} 
+          />
+        </View>
+        <View style={styles.historyContent}>
+          <Text style={[styles.historyMatch, { color: colors.text }]}>{item.match}</Text>
+          <Text style={[styles.historyTip, { color: colors.muted }]}>{item.tip} @ {item.odds}</Text>
+        </View>
+        <View style={styles.historyRight}>
+          <Text style={[styles.historyResult, { color: item.result === 'win' ? colors.success : colors.error }]}>
+            {item.result === 'win' ? 'WIN' : 'LOSS'}
+          </Text>
+          <Text style={[styles.historyDate, { color: colors.muted }]}>{item.date}</Text>
+        </View>
+      </TouchableOpacity>
+    </MotiView>
   );
 
   return (
@@ -64,28 +71,56 @@ export default function ProfileScreen() {
         style={styles.headerBackground}
       >
         <View style={styles.headerTop}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="share-social-outline" size={22} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="settings-outline" size={22} color="#fff" />
-          </TouchableOpacity>
+          <MotiView from={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
+            <TouchableOpacity style={styles.iconButton}>
+              <Ionicons name="share-social-outline" size={22} color="#fff" />
+            </TouchableOpacity>
+          </MotiView>
+          <MotiView from={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
+            <TouchableOpacity style={styles.iconButton}>
+              <Ionicons name="settings-outline" size={22} color="#fff" />
+            </TouchableOpacity>
+          </MotiView>
         </View>
 
         <View style={styles.profileInfo}>
-          <View style={styles.avatarContainer}>
+          <MotiView
+            from={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring' }}
+            style={styles.avatarContainer}
+          >
             <Image source={{ uri: USER_STATS.avatar }} style={styles.avatar} />
-            <View style={[styles.onlineBadge, { borderColor: colors.accent }]} />
-          </View>
-          <Text style={styles.name}>{USER_STATS.name}</Text>
-          <View style={[styles.rankBadge, { backgroundColor: 'rgba(0,0,0,0.4)' }]}>
+            <MotiView 
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ loop: true, duration: 2000 }}
+              style={[styles.onlineBadge, { borderColor: colors.accent }]} 
+            />
+          </MotiView>
+          <MotiText
+            from={{ opacity: 0, translateY: 10 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            style={styles.name}
+          >
+            {USER_STATS.name}
+          </MotiText>
+          <MotiView 
+            from={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            style={[styles.rankBadge, { backgroundColor: 'rgba(0,0,0,0.4)' }]}
+          >
             <MaterialCommunityIcons name="star-circle" size={16} color={colors.gold} />
             <Text style={[styles.rankText, { color: colors.gold }]}>{USER_STATS.rank}</Text>
-          </View>
+          </MotiView>
         </View>
       </LinearGradient>
 
-      <View style={[styles.statsContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <MotiView
+        from={{ opacity: 0, translateY: 30 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        transition={{ delay: 200 }}
+        style={[styles.statsContainer, { backgroundColor: colors.card, borderColor: colors.border }]}
+      >
         <View style={styles.statItem}>
           <Text style={[styles.statValue, { color: colors.success }]}>{USER_STATS.yield}</Text>
           <Text style={[styles.statLabel, { color: colors.muted }]}>YIELD</Text>
@@ -100,16 +135,21 @@ export default function ProfileScreen() {
           <Text style={[styles.statValue, { color: colors.text }]}>{USER_STATS.avgOdds}</Text>
           <Text style={[styles.statLabel, { color: colors.muted }]}>AVG ODDS</Text>
         </View>
-      </View>
+      </MotiView>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Capital Growth</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Performance Curve</Text>
           <View style={[styles.periodBadge, { backgroundColor: colors.tint + '15' }]}>
-            <Text style={[styles.periodText, { color: colors.tint }]}>30D</Text>
+            <Text style={[styles.periodText, { color: colors.tint }]}>LAST 30D</Text>
           </View>
         </View>
-        <View style={[styles.chartWrapper, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <MotiView
+          from={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 400 }}
+          style={[styles.chartWrapper, { backgroundColor: colors.card, borderColor: colors.border }]}
+        >
           <LineChart
             style={{ height: 180 }}
             data={CHART_DATA}
@@ -121,14 +161,15 @@ export default function ProfileScreen() {
             contentInset={{ top: 20, bottom: 20, left: 10, right: 10 }}
             curve={shape.curveNatural}
           />
-        </View>
+        </MotiView>
       </View>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Verified History</Text>
-          <TouchableOpacity>
-            <Text style={[styles.seeMore, { color: colors.tint }]}>Full History</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Verified Activity</Text>
+          <TouchableOpacity style={styles.row}>
+            <Text style={[styles.seeMore, { color: colors.tint }]}>See All</Text>
+            <Ionicons name="chevron-forward" size={14} color={colors.tint} />
           </TouchableOpacity>
         </View>
         <FlatList
@@ -162,12 +203,14 @@ const styles = StyleSheet.create({
     right: 0,
   },
   iconButton: {
-    width: 40,
+    width: 44,
     height: 44,
-    borderRadius: 12,
+    borderRadius: 14,
     backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   profileInfo: {
     alignItems: 'center',
@@ -177,9 +220,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   avatar: {
-    width: 110,
-    height: 110,
-    borderRadius: 55,
+    width: 120,
+    height: 120,
+    borderRadius: 40,
     borderWidth: 4,
     borderColor: 'rgba(255,255,255,0.2)',
   },
@@ -187,46 +230,46 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 5,
     right: 5,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: '#10B981',
     borderWidth: 4,
   },
   name: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '900',
     color: '#fff',
-    letterSpacing: -0.5,
+    letterSpacing: -1,
   },
   rankBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 20,
-    marginTop: 10,
+    marginTop: 12,
   },
   rankText: {
     fontSize: 12,
     fontWeight: '900',
     marginLeft: 6,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 1.5,
   },
   statsContainer: {
     flexDirection: 'row',
     marginHorizontal: 24,
     marginTop: -35,
-    borderRadius: 28,
-    padding: 24,
+    borderRadius: 32,
+    padding: 28,
     borderWidth: 1,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 12 },
+        shadowOffset: { width: 0, height: 16 },
         shadowOpacity: 0.15,
-        shadowRadius: 24,
+        shadowRadius: 32,
       },
       android: {
         elevation: 12,
@@ -244,25 +287,29 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   statValue: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '900',
     letterSpacing: -0.5,
   },
   statLabel: {
     fontSize: 10,
     fontWeight: '800',
-    marginTop: 6,
-    letterSpacing: 0.5,
+    marginTop: 8,
+    letterSpacing: 1,
   },
   section: {
-    marginTop: 35,
+    marginTop: 40,
     paddingHorizontal: 24,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 18,
+    marginBottom: 20,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   sectionTitle: {
     fontSize: 22,
@@ -279,22 +326,22 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   chartWrapper: {
-    borderRadius: 28,
+    borderRadius: 32,
     borderWidth: 1,
-    padding: 20,
+    padding: 24,
   },
   historyCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 18,
-    borderRadius: 24,
+    padding: 20,
+    borderRadius: 28,
     borderWidth: 1,
-    marginBottom: 14,
+    marginBottom: 16,
   },
   historyIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
+    width: 52,
+    height: 52,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -303,12 +350,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   historyMatch: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '800',
-    letterSpacing: -0.2,
+    letterSpacing: -0.3,
   },
   historyTip: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     marginTop: 4,
   },
@@ -316,17 +363,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   historyResult: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '900',
     letterSpacing: 0.5,
   },
   historyDate: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '800',
     marginTop: 4,
   },
   seeMore: {
     fontSize: 14,
     fontWeight: '800',
+    marginRight: 4,
   },
 });
