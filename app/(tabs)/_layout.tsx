@@ -1,55 +1,46 @@
-import * as React from 'react';
+import React from 'react';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
-import { 
-  Trophy, 
-  PlusCircle, 
-  UserCircle2 
-} from 'lucide-react-native';
-
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+
+function TabBarIcon(props: {
+  name: React.ComponentProps<typeof FontAwesome>['name'];
+  color: string;
+}) {
+  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+}
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-        tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
-        tabBarStyle: {
-          backgroundColor: Colors[colorScheme].card,
-          borderTopColor: Colors[colorScheme].border,
-          height: Platform.OS === 'ios' ? 88 : 68,
-          paddingBottom: Platform.OS === 'ios' ? 30 : 12,
-          paddingTop: 12,
-        },
-        headerShown: false,
+        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        headerShown: true,
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Arena',
-          tabBarIcon: ({ color }) => <Trophy size={24} color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <Tabs.Screen
         name="add-tip"
         options={{
-          title: 'Verify',
-          tabBarIcon: ({ color }) => <PlusCircle size={24} color={color} />,
+          title: 'Dodaj Typ',
+          tabBarIcon: ({ color }) => <TabBarIcon name="plus-circle" color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <UserCircle2 size={24} color={color} />,
+          title: 'Profil',
+          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
     </Tabs>
   );
 }
-
-import { Platform } from 'react-native';
