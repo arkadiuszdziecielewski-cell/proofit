@@ -1,34 +1,40 @@
-const tintColorLight = '#7C3AED'; // Vivid Purple 600
-const tintColorDark = '#A78BFA'; // Vivid Purple 400
+const tintColorLight = '#00F2FF'; 
+const tintColorDark = '#00F2FF'; 
 
 export default {
   light: {
-    text: '#0F172A',
-    background: '#F8FAFC',
+    text: '#050505',
+    background: '#FFFFFF',
     tint: tintColorLight,
-    tabIconDefault: '#94A3B8',
+    tabIconDefault: '#CCC',
     tabIconSelected: tintColorLight,
-    card: '#FFFFFF',
-    border: '#E2E8F0',
-    muted: '#64748B',
-    success: '#10B981',
-    error: '#EF4444',
-    gold: '#F59E0B',
-    accent: '#06B6D4',
+    card: '#F5F5F5',
+    border: '#EEE',
+    muted: '#666',
+    success: '#00FF94',
+    error: '#FF005C',
+    gold: '#FFD700',
+    accent: '#FF00E5',
+    glass: 'rgba(255, 255, 255, 0.03)',
+    glassBorder: 'rgba(255, 255, 255, 0.08)',
   },
   dark: {
-    text: '#F8FAFC',
-    background: '#030712', // Deep Space Black (Slate 950)
+    text: '#FFFFFF',
+    background: '#020202', // Nawet głębsza czerń
     tint: tintColorDark,
-    tabIconDefault: '#475569',
+    tabIconDefault: '#1A1A1A',
     tabIconSelected: tintColorDark,
-    card: '#111827', // Dark Slate 900
-    border: '#1F2937', // Slate 800
-    muted: '#9CA3AF', // Gray 400
-    success: '#34D399',
-    error: '#F87171',
-    gold: '#FBBF24',
-    accent: '#22D3EE', // Vivid Cyan 400
-    purple: '#C084FC', // Electric Purple 400
+    card: '#080808', // Bardziej techniczna szarość
+    border: '#151515',
+    muted: '#555',
+    success: '#00FF94', // Neon Green
+    error: '#FF005C', // Neon Red/Pink
+    gold: '#FFD700', 
+    accent: '#FF00E5', // Neon Magenta
+    cyber: '#00F2FF', // Electric Cyan
+    plasma: '#7000FF', // Plasma Purple
+    matrix: '#00FF41', // Matrix Green
+    glass: 'rgba(255, 255, 255, 0.02)',
+    glassBorder: 'rgba(255, 255, 255, 0.05)',
   },
 };

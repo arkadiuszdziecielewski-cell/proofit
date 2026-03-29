@@ -1,178 +1,217 @@
 import * as React from 'react';
-import { StyleSheet, FlatList, ScrollView, TouchableOpacity, Image, Platform, useWindowDimensions } from 'react-native';
+import { StyleSheet, FlatList, ScrollView, TouchableOpacity, Image, Platform, useWindowDimensions, Dimensions, ViewStyle } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { FontAwesome5, MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView, MotiText } from 'moti';
+import { BlurView } from 'expo-blur';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const TOP_TYPERS = [
-  { id: '1', name: 'Jan Bet', yield: '+24.5%', tips: 120, winRate: '68%', rank: 1, avatar: 'https://i.pravatar.cc/150?u=1' },
-  { id: '2', name: 'Marek Pro', yield: '+18.2%', tips: 85, winRate: '62%', rank: 2, avatar: 'https://i.pravatar.cc/150?u=2' },
-  { id: '3', name: 'Zibi Tip', yield: '+15.1%', tips: 210, winRate: '58%', rank: 3, avatar: 'https://i.pravatar.cc/150?u=3' },
+  { id: '1', name: 'JAN BET', yield: '+24.5%', tips: 120, winRate: '68%', rank: 1, avatar: 'https://i.pravatar.cc/150?u=1', bio: 'Tennis Expert • ATP/WTA', serial: 'PX-9001' },
+  { id: '2', name: 'MAREK PRO', yield: '+18.2%', tips: 85, winRate: '62%', rank: 2, avatar: 'https://i.pravatar.cc/150?u=2', bio: 'Football • Premier League', serial: 'PX-7240' },
+  { id: '3', name: 'ZIBI TIP', yield: '+15.1%', tips: 210, winRate: '58%', rank: 3, avatar: 'https://i.pravatar.cc/150?u=3', bio: 'Basketball • NBA Specialist', serial: 'PX-1150' },
 ];
 
 const HOT_TIPS = [
-  { id: '1', match: 'Real Madrid vs Barcelona', tip: 'Over 2.5', odds: '1.85', buyers: 124, league: 'La Liga' },
-  { id: '2', match: 'Iga Świątek vs Aryna Sabalenka', tip: '1', odds: '1.65', buyers: 89, league: 'WTA Miami' },
-  { id: '3', match: 'Legia Warszawa vs Lech Poznań', tip: 'BTTS', odds: '1.92', buyers: 56, league: 'Ekstraklasa' },
+  { id: '1', match: 'Real Madrid vs Barcelona', tip: 'Over 2.5', odds: '1.85', buyers: 124, league: 'LA LIGA', time: 'LIVE', risk: 'LOW' },
+  { id: '2', match: 'Iga Świątek vs Aryna Sabalenka', tip: '1', odds: '1.65', buyers: 89, league: 'WTA MIAMI', time: '20:45', risk: 'MED' },
+  { id: '3', match: 'Legia vs Lech', tip: 'BTTS', odds: '1.92', buyers: 56, league: 'EKSTRAKLASA', time: 'TOMORROW', risk: 'HIGH' },
 ];
-
-const FILTERS = ['All', 'Football', 'Tennis', 'Basketball', 'E-sport'];
 
 export default function ArenaScreen() {
   const { width } = useWindowDimensions();
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? 'dark';
   const colors = Colors[colorScheme];
 
-  const renderTyper = ({ item, index }: { item: typeof TOP_TYPERS[0], index: number }) => (
+  const renderTyperCard = ({ item, index }: { item: typeof TOP_TYPERS[0], index: number }) => (
     <MotiView
-      from={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 100, type: 'timing' }}
+      from={{ opacity: 0, scale: 0.8, rotateY: '45deg' }}
+      animate={{ opacity: 1, scale: 1, rotateY: '0deg' }}
+      transition={{ delay: index * 200, type: 'spring' }}
+      style={styles.typerSlide}
     >
-      <TouchableOpacity style={[styles.typerCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={[styles.rankBadge, { backgroundColor: item.rank === 1 ? colors.gold : 'rgba(255,255,255,0.05)' }]}>
-          <Text style={[styles.rankText, { color: item.rank === 1 ? '#000' : colors.text }]}>{item.rank}</Text>
-        </View>
-        <Image source={{ uri: item.avatar }} style={styles.avatar} />
-        <View style={styles.typerInfo}>
-          <Text style={[styles.typerName, { color: colors.text }]}>{item.name}</Text>
-          <Text style={[styles.typerStats, { color: colors.muted }]}>{item.tips} tips • {item.winRate} winrate</Text>
-        </View>
-        <View style={styles.yieldContainer}>
-          <Text style={[styles.yieldText, { color: colors.success }]}>{item.yield}</Text>
-          <Text style={[styles.yieldLabel, { color: colors.muted }]}>YIELD</Text>
-        </View>
+      <TouchableOpacity activeOpacity={0.9} style={[styles.typerHeroCard, { borderColor: colors.border }]}>
+        <Image source={{ uri: item.avatar }} style={styles.typerHeroAvatar} />
+        
+        {/* Neon Border Glow */}
+        <LinearGradient
+          colors={[colors.cyber, 'transparent']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.neonBorder}
+        />
+
+        <BlurView intensity={30} tint="dark" style={styles.typerHeroOverlay}>
+          <View style={styles.typerHeroContent}>
+            <View style={styles.typerHeroTop}>
+              <View style={[styles.heroRank, { backgroundColor: colors.background }]}>
+                <Text style={[styles.heroRankText, { color: colors.cyber }]}>LEVEL {item.rank}</Text>
+              </View>
+              <MotiView 
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ loop: true, duration: 2000 }}
+                style={styles.serialBox}
+              >
+                <Text style={styles.serialText}>{item.serial}</Text>
+              </MotiView>
+            </View>
+            
+            <Text style={styles.heroName}>{item.name}</Text>
+            <View style={styles.statsRow}>
+              <View>
+                <Text style={styles.statLabel}>PROFIT</Text>
+                <Text style={[styles.statValue, { color: colors.success }]}>{item.yield}</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View>
+                <Text style={styles.statLabel}>WIN RATE</Text>
+                <Text style={styles.statValue}>{item.winRate}</Text>
+              </View>
+            </View>
+            
+            <View style={styles.bioContainer}>
+              <View style={[styles.bioIndicator, { backgroundColor: colors.cyber }]} />
+              <Text style={styles.heroBio}>{item.bio}</Text>
+            </View>
+          </View>
+        </BlurView>
+        
+        {/* Cyber Decorative Elements */}
+        <View style={[styles.cornerDetail, { top: 20, right: 20, borderTopWidth: 2, borderRightWidth: 2, borderColor: colors.cyber }]} />
+        <View style={[styles.cornerDetail, { bottom: 20, left: 20, borderBottomWidth: 2, borderLeftWidth: 2, borderColor: colors.cyber }]} />
       </TouchableOpacity>
     </MotiView>
   );
 
-  const renderHotTip = ({ item, index }: { item: typeof HOT_TIPS[0], index: number }) => (
+  const renderOpportunity = ({ item, index }: { item: typeof HOT_TIPS[0], index: number }) => (
     <MotiView
-      from={{ opacity: 0, translateY: 30 }}
-      animate={{ opacity: 1, translateY: 0 }}
-      transition={{ delay: 400 + index * 100, type: 'spring' }}
+      from={{ opacity: 0, translateX: -100 }}
+      animate={{ opacity: 1, translateX: 0 }}
+      transition={{ delay: 600 + index * 150 }}
+      style={styles.oppCardContainer}
     >
-      <TouchableOpacity style={[styles.tipCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <LinearGradient
-          colors={['rgba(255,255,255,0.02)', 'transparent']}
-          style={styles.cardGradient}
-        >
-          <View style={styles.tipHeader}>
-            <View style={[styles.leagueBadge, { backgroundColor: colors.tint + '20' }]}>
-              <Text style={[styles.leagueText, { color: colors.tint }]}>{item.league}</Text>
+      <TouchableOpacity activeOpacity={0.8} style={[styles.oppCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <View style={styles.oppLeftDecor}>
+          <LinearGradient
+            colors={[colors.cyber, colors.plasma]}
+            style={StyleSheet.absoluteFill}
+          />
+        </View>
+
+        <View style={styles.oppMainContent}>
+          <View style={styles.oppHeader}>
+            <View style={styles.leagueBox}>
+              <Text style={[styles.oppLeague, { color: colors.cyber }]}>{item.league}</Text>
+              <View style={[styles.leagueDot, { backgroundColor: colors.cyber }]} />
             </View>
-            <View style={[styles.oddsBadge, { backgroundColor: colors.accent + '20' }]}>
-              <Text style={[styles.oddsText, { color: colors.accent }]}>{item.odds}</Text>
+            <Text style={[styles.oppTime, { color: colors.muted }]}>{item.time}</Text>
+          </View>
+          
+          <Text style={[styles.oppMatch, { color: colors.text }]}>{item.match}</Text>
+          
+          <View style={styles.oppFooter}>
+            <View style={styles.oppMetric}>
+              <Text style={styles.metricLabel}>PREDICTION</Text>
+              <Text style={[styles.metricValue, { color: colors.text }]}>{item.tip}</Text>
+            </View>
+            <View style={styles.oppAction}>
+              <View style={styles.oddsBox}>
+                <Text style={[styles.oppOdds, { color: colors.success }]}>{item.odds}</Text>
+              </View>
+              <TouchableOpacity style={[styles.unlockBtn, { backgroundColor: colors.text }]}>
+                <Ionicons name="flash" size={16} color={colors.background} />
+              </TouchableOpacity>
             </View>
           </View>
-          <Text style={[styles.matchText, { color: colors.text }]}>{item.match}</Text>
-          <View style={styles.tipDetailRow}>
-            <Text style={[styles.tipLabel, { color: colors.muted }]}>PREDICTION</Text>
-            <Text style={[styles.tipValue, { color: colors.text }]}>{item.tip}</Text>
-          </View>
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          <View style={styles.tipFooter}>
-            <View style={styles.buyerContainer}>
-              <FontAwesome5 name="fire" size={14} color={colors.error} />
-              <Text style={[styles.buyerText, { color: colors.muted }]}>{item.buyers} ACTIVE</Text>
-            </View>
-            <TouchableOpacity style={[styles.buyButton, { backgroundColor: colors.tint }]}>
-              <LinearGradient
-                colors={[colors.tint, colors.accent]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.buyButtonGradient}
-              >
-                <Text style={styles.buyButtonText}>UNLOCK ACCESS</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        </LinearGradient>
+        </View>
       </TouchableOpacity>
     </MotiView>
   );
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
-      <LinearGradient
-        colors={[colors.tint, colors.accent]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.header}
-      >
-        <View style={styles.headerTop}>
-          <MotiView from={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
-            <View style={styles.logoCircle}>
-              <MaterialCommunityIcons name="trending-up" size={30} color="#fff" />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Background Cyber Grid */}
+      <View style={styles.gridOverlay}>
+        {[...Array(10)].map((_, i) => (
+          <View key={i} style={[styles.gridLine, { top: i * 100, backgroundColor: colors.border }]} />
+        ))}
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false} stickyHeaderIndices={[0]}>
+        <BlurView intensity={80} tint="dark" style={styles.headerGlass}>
+          <View style={styles.navBar}>
+            <View style={styles.logoContainer}>
+              <MotiView 
+                animate={{ rotate: '360deg' }}
+                transition={{ loop: true, duration: 4000, type: 'timing' }}
+                style={[styles.logoHex, { borderColor: colors.cyber }]} 
+              />
+              <Text style={[styles.brandName, { color: colors.text }]}>PROOFIT</Text>
             </View>
-          </MotiView>
-          <View style={styles.headerTitleContainer}>
-            <MotiText from={{ opacity: 0, translateX: -20 }} animate={{ opacity: 1, translateX: 0 }} style={styles.logoText}>PROOFIT</MotiText>
-            <Text style={styles.headerSubtitle}>Elite Betting Exchange</Text>
+            <View style={styles.headerActions}>
+              <TouchableOpacity style={styles.iconBtn}>
+                <Ionicons name="notifications-outline" size={24} color={colors.text} />
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.profileCircle, { borderColor: colors.cyber }]}>
+                <Image source={{ uri: TOP_TYPERS[0].avatar }} style={styles.miniAvatar} />
+              </TouchableOpacity>
+            </View>
           </View>
-          <TouchableOpacity style={styles.profileButton}>
-            <Ionicons name="notifications-outline" size={24} color="#fff" />
-          </TouchableOpacity>
+        </BlurView>
+
+        <View style={styles.heroSection}>
+          <MotiText 
+            from={{ opacity: 0, translateY: 30 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            style={[styles.heroTitle, { color: colors.text }]}
+          >
+            THE<Text style={{ color: colors.cyber }}> ARENA</Text>
+          </MotiText>
+          <Text style={[styles.heroSubtitle, { color: colors.muted }]}>
+            DECENRTRALIZED INTELLIGENCE NETWORK // VERIFIED
+          </Text>
         </View>
-      </LinearGradient>
 
-      <View style={styles.content}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer} contentContainerStyle={styles.filterContent}>
-          {FILTERS.map((filter, index) => (
-            <TouchableOpacity 
-              key={index} 
-              style={[
-                styles.filterChip, 
-                { 
-                  backgroundColor: index === 0 ? colors.tint : colors.card, 
-                  borderColor: index === 0 ? colors.tint : colors.border 
-                }
-              ]}
-            >
-              <Text style={[styles.filterText, { color: index === 0 ? '#fff' : colors.muted }]}>{filter}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        <View style={styles.section}>
+        <View style={styles.horizontalSection}>
           <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>Elite Board</Text>
-            <TouchableOpacity style={styles.row}>
-              <Text style={[styles.seeAll, { color: colors.accent }]}>Ranking</Text>
-              <Ionicons name="chevron-forward" size={16} color={colors.accent} />
-            </TouchableOpacity>
+            <View style={styles.sectionTitleBox}>
+              <View style={[styles.titleIndicator, { backgroundColor: colors.cyber }]} />
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>TOP ANALYSTS</Text>
+            </View>
+            <Text style={styles.liveCount}>03 ONLINE</Text>
           </View>
           <FlatList
             data={TOP_TYPERS}
-            renderItem={renderTyper}
-            keyExtractor={(item) => item.id}
-            scrollEnabled={false}
+            renderItem={renderTyperCard}
+            keyExtractor={item => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={SCREEN_WIDTH * 0.85 + 20}
+            decelerationRate="fast"
+            contentContainerStyle={styles.horizontalList}
           />
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.verticalSection}>
           <View style={styles.sectionHeader}>
-            <View style={styles.row}>
-              <Text style={[styles.sectionTitle, { color: colors.text }]}>Live Opportunities</Text>
-              <MotiView
-                animate={{ scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] }}
-                transition={{ loop: true, duration: 2000 }}
-                style={styles.liveDot}
-              />
+            <View style={styles.sectionTitleBox}>
+              <View style={[styles.titleIndicator, { backgroundColor: colors.plasma }]} />
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>LIVE SIGNALS</Text>
             </View>
+            <MotiView 
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ loop: true, duration: 1000 }}
+              style={[styles.pulse, { backgroundColor: colors.error }]}
+            />
           </View>
-          <FlatList
-            data={HOT_TIPS}
-            renderItem={renderHotTip}
-            keyExtractor={(item) => item.id}
-            scrollEnabled={false}
-          />
+          {HOT_TIPS.map((tip, idx) => renderOpportunity({ item: tip, index: idx }))}
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -180,275 +219,325 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: 40,
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
+  gridOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.1,
   },
-  headerTop: {
+  gridLine: {
+    height: 1,
+    width: '100%',
+    position: 'absolute',
+  },
+  headerGlass: {
+    paddingTop: Platform.OS === 'ios' ? 50 : 30,
+    paddingBottom: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
+  },
+  navBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 24,
   },
-  logoCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+  logoHex: {
+    width: 24,
+    height: 24,
+    borderWidth: 2,
+    borderRadius: 4,
+    marginRight: 12,
+    transform: [{ rotate: '45deg' }],
   },
-  headerTitleContainer: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  logoText: {
-    fontSize: 32,
+  brandName: {
+    fontSize: 18,
     fontWeight: '900',
-    color: '#fff',
+    letterSpacing: 4,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconBtn: {
+    marginRight: 15,
+  },
+  profileCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    padding: 2,
+  },
+  miniAvatar: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 15,
+  },
+  heroSection: {
+    padding: 30,
+    marginTop: 20,
+  },
+  heroTitle: {
+    fontSize: 64,
+    fontWeight: '900',
+    letterSpacing: -4,
+    lineHeight: 60,
+  },
+  heroSubtitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    marginTop: 15,
     letterSpacing: 2,
   },
-  headerSubtitle: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.7)',
-    fontWeight: '800',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  profileButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    marginTop: -25,
-  },
-  filterContainer: {
-    marginBottom: 30,
-  },
-  filterContent: {
-    paddingHorizontal: 20,
-  },
-  filterChip: {
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 22,
-    marginHorizontal: 6,
-    borderWidth: 1,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.2,
-        shadowRadius: 15,
-      },
-      android: {
-        elevation: 6,
-      },
-    }),
-  },
-  filterText: {
-    fontWeight: '900',
-    fontSize: 14,
-    letterSpacing: 0.5,
-  },
-  section: {
-    paddingHorizontal: 24,
+  horizontalSection: {
     marginBottom: 40,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    paddingHorizontal: 30,
+    marginBottom: 25,
   },
-  row: {
+  sectionTitleBox: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  titleIndicator: {
+    width: 4,
+    height: 16,
+    marginRight: 10,
   },
   sectionTitle: {
-    fontSize: 24,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  seeAll: {
-    fontWeight: '900',
     fontSize: 14,
-    marginRight: 4,
+    fontWeight: '900',
+    letterSpacing: 2,
   },
-  typerCard: {
+  liveCount: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: 'rgba(255,255,255,0.4)',
+  },
+  horizontalList: {
+    paddingLeft: 30,
+    paddingRight: 40,
+  },
+  typerSlide: {
+    marginRight: 20,
+    perspective: 1000,
+  },
+  typerHeroCard: {
+    width: SCREEN_WIDTH * 0.85,
+    height: 480,
+    borderRadius: 40,
+    overflow: 'hidden',
+    borderWidth: 1,
+    backgroundColor: '#000',
+  },
+  neonBorder: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 4,
+  },
+  typerHeroAvatar: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    opacity: 0.7,
+  },
+  typerHeroOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '55%',
+    padding: 30,
+  },
+  typerHeroContent: {
+    width: '100%',
+  },
+  typerHeroTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  heroRank: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  heroRankText: {
+    fontWeight: '900',
+    fontSize: 10,
+    letterSpacing: 1,
+  },
+  serialBox: {
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 2,
+  },
+  serialText: {
+    color: 'rgba(255,255,255,0.3)',
+    fontSize: 9,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  heroName: {
+    color: '#fff',
+    fontSize: 42,
+    fontWeight: '900',
+    letterSpacing: -2,
+    marginBottom: 15,
+  },
+  statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 18,
-    borderRadius: 28,
-    borderWidth: 1,
-    marginBottom: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.15,
-        shadowRadius: 20,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
+    marginBottom: 25,
   },
-  rankBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
+  statLabel: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
+    marginBottom: 4,
   },
-  rankText: {
-    fontSize: 16,
+  statValue: {
+    color: '#fff',
+    fontSize: 22,
     fontWeight: '900',
   },
-  avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 18,
-    marginRight: 16,
+  statDivider: {
+    width: 1,
+    height: 30,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    marginHorizontal: 30,
   },
-  typerInfo: {
-    flex: 1,
+  bioContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
-  typerName: {
-    fontSize: 18,
-    fontWeight: '900',
+  bioIndicator: {
+    width: 2,
+    height: 14,
+    marginTop: 3,
+    marginRight: 10,
   },
-  typerStats: {
+  heroBio: {
+    color: 'rgba(255,255,255,0.6)',
     fontSize: 13,
-    fontWeight: '700',
-    marginTop: 4,
+    fontWeight: '600',
+    flex: 1,
+    lineHeight: 20,
   },
-  yieldContainer: {
-    alignItems: 'flex-end',
+  cornerDetail: {
+    position: 'absolute',
+    width: 15,
+    height: 15,
   },
-  yieldText: {
-    fontSize: 20,
-    fontWeight: '900',
+  verticalSection: {
+    paddingBottom: 120,
   },
-  yieldLabel: {
+  pulse: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  oppCardContainer: {
+    paddingHorizontal: 30,
+    marginBottom: 15,
+  },
+  oppCard: {
+    flexDirection: 'row',
+    borderRadius: 24,
+    borderWidth: 1,
+    overflow: 'hidden',
+    height: 140,
+  },
+  oppLeftDecor: {
+    width: 6,
+    height: '100%',
+  },
+  oppMainContent: {
+    flex: 1,
+    padding: 20,
+  },
+  oppHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  leagueBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  leagueDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    marginLeft: 8,
+  },
+  oppLeague: {
     fontSize: 10,
     fontWeight: '900',
-    textTransform: 'uppercase',
-  },
-  tipCard: {
-    borderRadius: 36,
-    borderWidth: 1,
-    marginBottom: 20,
-    overflow: 'hidden',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 20 },
-        shadowOpacity: 0.3,
-        shadowRadius: 30,
-      },
-      android: {
-        elevation: 12,
-      },
-    }),
-  },
-  cardGradient: {
-    padding: 24,
-  },
-  tipHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  leagueBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
-  },
-  leagueText: {
-    fontSize: 11,
-    fontWeight: '900',
-    textTransform: 'uppercase',
     letterSpacing: 1,
   },
-  oddsBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
-  },
-  oddsText: {
-    fontWeight: '900',
-    fontSize: 15,
-  },
-  matchText: {
-    fontSize: 24,
-    fontWeight: '900',
-    marginBottom: 12,
-    letterSpacing: -0.5,
-  },
-  tipDetailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  tipLabel: {
-    fontSize: 12,
-    fontWeight: '900',
-    marginRight: 10,
-    letterSpacing: 1,
-  },
-  tipValue: {
-    fontSize: 16,
+  oppTime: {
+    fontSize: 10,
     fontWeight: '800',
   },
-  divider: {
-    height: 1,
-    marginBottom: 20,
-    opacity: 0.1,
+  oppMatch: {
+    fontSize: 18,
+    fontWeight: '900',
+    marginBottom: 15,
   },
-  tipFooter: {
+  oppFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  buyerContainer: {
+  oppMetric: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  buyerText: {
-    fontSize: 13,
+  metricLabel: {
+    color: 'rgba(255,255,255,0.3)',
+    fontSize: 8,
     fontWeight: '900',
-    marginLeft: 8,
-    letterSpacing: 0.5,
+    marginRight: 10,
   },
-  buyButton: {
-    borderRadius: 18,
-    overflow: 'hidden',
+  metricValue: {
+    fontSize: 12,
+    fontWeight: '900',
   },
-  buyButtonGradient: {
-    paddingHorizontal: 24,
-    paddingVertical: 14,
+  oppAction: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  buyButtonText: {
-    color: '#fff',
-    fontWeight: '900',
-    fontSize: 14,
-    letterSpacing: 1,
+  oddsBox: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    marginRight: 10,
   },
-  liveDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#EF4444',
-    marginLeft: 10,
+  oppOdds: {
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  unlockBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Platform, useWindowDimensions } from 'react-native';
-import { Text, View } from '@/components/Themed';
+import { StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Platform, useWindowDimensions, View } from 'react-native';
+import { Text } from '@/components/Themed';
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -10,9 +10,9 @@ import { MotiView, MotiText, AnimatePresence } from 'moti';
 import { Easing } from 'react-native-reanimated';
 
 const SPORTS = [
-  { id: 'soccer', name: 'Football', icon: 'sports-soccer' },
-  { id: 'tennis', name: 'Tennis', icon: 'sports-tennis' },
-  { id: 'basketball', name: 'Basketball', icon: 'sports-basketball' },
+  { id: 'soccer', name: 'FOOTBALL', icon: 'sports-soccer', code: 'S-01' },
+  { id: 'tennis', name: 'TENNIS', icon: 'sports-tennis', code: 'T-04' },
+  { id: 'basketball', name: 'BASKETBALL', icon: 'sports-basketball', code: 'B-09' },
 ];
 
 const LEAGUES: Record<string, string[]> = {
@@ -32,8 +32,8 @@ const MOCK_MATCHES: Record<string, any[]> = {
 };
 
 export default function AddTipScreen() {
-  const { width } = useWindowDimensions();
-  const colorScheme = useColorScheme() ?? 'light';
+  const { width, height } = useWindowDimensions();
+  const colorScheme = useColorScheme() ?? 'dark';
   const colors = Colors[colorScheme];
 
   const [step, setStep] = useState(1);
@@ -54,7 +54,7 @@ export default function AddTipScreen() {
     setTimeout(() => {
       setIsLoading(false);
       setStep(3);
-    }, 800);
+    }, 1500);
   };
 
   const handleMatchSelect = (match: any) => {
@@ -70,240 +70,241 @@ export default function AddTipScreen() {
     setSelectedMarket(null);
   };
 
-  const stepWidth = (width - 48 - (40 * 4)) / 3;
-
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <MotiText 
-          from={{ opacity: 0, translateY: -20 }}
-          animate={{ opacity: 1, translateY: 0 }}
-          style={[styles.title, { color: colors.text }]}
-        >
-          VERIFIER
-        </MotiText>
-        <Text style={[styles.subtitle, { color: colors.muted }]}>
-          Market-linked verification. Instant settlement.
-        </Text>
-      </View>
-
-      <View style={styles.stepperContainer}>
-        {[1, 2, 3, 4].map((s) => (
-          <View key={s} style={styles.stepItem}>
-            <MotiView 
-              animate={{ 
-                backgroundColor: step >= s ? colors.tint : colors.card,
-                borderColor: step >= s ? colors.tint : colors.border,
-                scale: step === s ? 1.15 : 1
-              }}
-              style={styles.stepCircle}
-            >
-              {step > s ? (
-                <Ionicons name="checkmark-sharp" size={20} color="#fff" />
-              ) : (
-                <Text style={[styles.stepNum, { color: step >= s ? '#fff' : colors.muted }]}>{s}</Text>
-              )}
-            </MotiView>
-            {s < 4 && (
-              <View style={[styles.stepBar, { width: stepWidth, backgroundColor: colors.border }]}>
-                <MotiView 
-                  animate={{ width: step > s ? '100%' : '0%' }}
-                  style={{ height: '100%', backgroundColor: colors.tint }} 
-                />
-              </View>
-            )}
-          </View>
-        ))}
-      </View>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Persistent HUD Elements */}
+      <View style={[styles.hudCorner, { top: 40, left: 20, borderTopWidth: 1, borderLeftWidth: 1, borderColor: colors.cyber + '40' }]} />
+      <View style={[styles.hudCorner, { top: 40, right: 20, borderTopWidth: 1, borderRightWidth: 1, borderColor: colors.cyber + '40' }]} />
+      <View style={[styles.hudCorner, { bottom: 40, left: 20, borderBottomWidth: 1, borderLeftWidth: 1, borderColor: colors.cyber + '40' }]} />
+      <View style={[styles.hudCorner, { bottom: 40, right: 20, borderBottomWidth: 1, borderRightWidth: 1, borderColor: colors.cyber + '40' }]} />
 
       <AnimatePresence exitBeforeEnter>
         {step === 1 && (
           <MotiView
             key="s1"
-            from={{ opacity: 0, translateX: 50 }}
-            animate={{ opacity: 1, translateX: 0 }}
-            exit={{ opacity: 0, translateX: -50 }}
-            style={styles.pane}
+            from={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            style={[styles.fullPane, { height }]}
           >
-            <Text style={[styles.paneTitle, { color: colors.text }]}>Discipline</Text>
+            <View style={styles.scannerHeader}>
+              <View style={styles.headerLine}>
+                <MotiView 
+                  animate={{ width: ['0%', '100%'] }} 
+                  transition={{ duration: 2000, loop: true }}
+                  style={[styles.scanLine, { backgroundColor: colors.cyber }]} 
+                />
+              </View>
+              <Text style={[styles.scannerTitle, { color: colors.text }]}>INITIALIZING<Text style={{ color: colors.cyber }}> SCAN</Text></Text>
+              <Text style={[styles.scannerSubtitle, { color: colors.muted }]}>ACCESSING GLOBAL ODDS FEED...</Text>
+            </View>
+
             <View style={styles.sportsGrid}>
-              {SPORTS.map((sport) => (
-                <TouchableOpacity
+              {SPORTS.map((sport, idx) => (
+                <MotiView 
                   key={sport.id}
-                  style={[styles.sportCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-                  onPress={() => handleSportSelect(sport.id)}
+                  from={{ opacity: 0, translateY: 50 }}
+                  animate={{ opacity: 1, translateY: 0 }}
+                  transition={{ delay: idx * 100, type: 'spring' }}
+                  style={styles.sportCardWrapper}
                 >
-                  <LinearGradient
-                    colors={[colors.tint + '15', 'transparent']}
-                    style={styles.sportIconBox}
+                  <TouchableOpacity
+                    style={[styles.sportCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+                    onPress={() => handleSportSelect(sport.id)}
                   >
-                    <MaterialIcons name={sport.icon as any} size={40} color={colors.tint} />
-                  </LinearGradient>
-                  <Text style={[styles.sportLabel, { color: colors.text }]}>{sport.name}</Text>
-                </TouchableOpacity>
+                    <LinearGradient
+                      colors={[colors.cyber + '05', 'transparent']}
+                      style={StyleSheet.absoluteFill}
+                    />
+                    <MaterialIcons name={sport.icon as any} size={42} color={colors.cyber} />
+                    <Text style={[styles.sportLabel, { color: colors.text }]}>{sport.name}</Text>
+                    <Text style={[styles.sportCode, { color: colors.muted }]}>{sport.code}</Text>
+                    
+                    <View style={[styles.cardAccent, { bottom: 15, right: 15, backgroundColor: colors.cyber }]} />
+                  </TouchableOpacity>
+                </MotiView>
               ))}
             </View>
           </MotiView>
         )}
 
-        {step === 2 && selectedSport && (
+        {step === 2 && (
           <MotiView
             key="s2"
-            from={{ opacity: 0, translateX: 50 }}
+            from={{ opacity: 0, translateX: 300 }}
             animate={{ opacity: 1, translateX: 0 }}
-            exit={{ opacity: 0, translateX: -50 }}
-            style={styles.pane}
+            exit={{ opacity: 0, translateX: -300 }}
+            style={[styles.fullPane, { height }]}
           >
-            <TouchableOpacity onPress={() => setStep(1)} style={styles.backLink}>
-              <Ionicons name="chevron-back" size={20} color={colors.accent} />
-              <Text style={[styles.backText, { color: colors.accent }]}>BACK</Text>
-            </TouchableOpacity>
-            <Text style={[styles.paneTitle, { color: colors.text }]}>League</Text>
-            {LEAGUES[selectedSport].map((league, i) => (
-              <MotiView key={league} from={{ opacity: 0, translateY: 10 }} animate={{ opacity: 1, translateY: 0 }} transition={{ delay: i * 50 }}>
-                <TouchableOpacity
-                  style={[styles.leagueRow, { backgroundColor: colors.card, borderColor: colors.border }]}
-                  onPress={() => handleLeagueSelect(league)}
+            <View style={styles.scannerHeader}>
+              <TouchableOpacity onPress={() => setStep(1)} style={styles.backBtn}>
+                <Ionicons name="arrow-back" size={24} color={colors.cyber} />
+                <Text style={[styles.backText, { color: colors.cyber }]}>RETURN</Text>
+              </TouchableOpacity>
+              <Text style={[styles.scannerTitle, { color: colors.text }]}>SELECT<Text style={{ color: colors.cyber }}> REGION</Text></Text>
+            </View>
+
+            <ScrollView contentContainerStyle={styles.listPadding}>
+              {LEAGUES[selectedSport!].map((league, idx) => (
+                <MotiView
+                  key={league}
+                  from={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: idx * 50 }}
                 >
-                  <Text style={[styles.leagueName, { color: colors.text }]}>{league}</Text>
-                  <View style={[styles.leagueIcon, { backgroundColor: colors.accent + '15' }]}>
-                    <Ionicons name="arrow-forward" size={18} color={colors.accent} />
-                  </View>
-                </TouchableOpacity>
-              </MotiView>
-            ))}
+                  <TouchableOpacity
+                    style={[styles.leagueRow, { borderColor: colors.border }]}
+                    onPress={() => handleLeagueSelect(league)}
+                  >
+                    <View style={styles.leagueInfo}>
+                      <Text style={[styles.leagueCode, { color: colors.cyber }]}>L-{100 + idx}</Text>
+                      <Text style={[styles.leagueText, { color: colors.text }]}>{league.toUpperCase()}</Text>
+                    </View>
+                    <MaterialCommunityIcons name="chevron-double-right" size={20} color={colors.cyber} />
+                  </TouchableOpacity>
+                </MotiView>
+              ))}
+            </ScrollView>
           </MotiView>
         )}
 
         {step === 3 && (
           <MotiView
             key="s3"
-            from={{ opacity: 0, translateX: 50 }}
-            animate={{ opacity: 1, translateX: 0 }}
-            exit={{ opacity: 0, translateX: -50 }}
-            style={styles.pane}
+            from={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={[styles.fullPane, { height }]}
           >
             {isLoading ? (
-              <View style={styles.loader}>
+              <View style={styles.loadingContainer}>
                 <MotiView
-                  animate={{ rotate: '360deg' }}
-                  transition={{ loop: true, duration: 800, type: 'timing', easing: Easing.linear }}
-                >
-                  <MaterialCommunityIcons name="loading" size={60} color={colors.tint} />
-                </MotiView>
-                <Text style={[styles.loaderText, { color: colors.muted }]}>FETCHING MARKET RATES...</Text>
+                  animate={{ 
+                    scale: [1, 1.5, 1],
+                    rotate: ['0deg', '180deg', '360deg'],
+                    opacity: [0.3, 1, 0.3]
+                  }}
+                  transition={{ loop: true, duration: 2000 }}
+                  style={[styles.loadingHex, { borderColor: colors.cyber }]}
+                />
+                <Text style={[styles.loadingText, { color: colors.cyber }]}>DECRYPTING DATA STREAM...</Text>
               </View>
             ) : (
               <>
-                <TouchableOpacity onPress={() => setStep(2)} style={styles.backLink}>
-                  <Ionicons name="chevron-back" size={20} color={colors.accent} />
-                  <Text style={[styles.backText, { color: colors.accent }]}>BACK</Text>
-                </TouchableOpacity>
-                <Text style={[styles.paneTitle, { color: colors.text }]}>Match</Text>
-                {MOCK_MATCHES[selectedLeague!]?.map((match, i) => (
-                  <MotiView key={match.id} from={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 100 }}>
+                <View style={styles.scannerHeader}>
+                  <TouchableOpacity onPress={() => setStep(2)} style={styles.backBtn}>
+                    <Ionicons name="arrow-back" size={24} color={colors.cyber} />
+                    <Text style={[styles.backText, { color: colors.cyber }]}>REGION</Text>
+                  </TouchableOpacity>
+                  <Text style={[styles.scannerTitle, { color: colors.text }]}>LIVE<Text style={{ color: colors.cyber }}> EVENTS</Text></Text>
+                </View>
+                <ScrollView contentContainerStyle={styles.listPadding}>
+                  {MOCK_MATCHES[selectedLeague!]?.map((match, idx) => (
                     <TouchableOpacity
-                      style={[styles.matchCard, { backgroundColor: colors.card, borderColor: colors.border }]}
+                      key={match.id}
+                      style={[styles.eventCard, { backgroundColor: colors.card, borderColor: colors.border }]}
                       onPress={() => handleMatchSelect(match)}
                     >
-                      <Text style={[styles.matchInfo, { color: colors.text }]}>{match.teams}</Text>
-                      <View style={styles.oddsLine}>
+                      <View style={styles.eventHeader}>
+                        <View style={[styles.liveIndicator, { backgroundColor: colors.success }]} />
+                        <Text style={[styles.eventTime, { color: colors.muted }]}>SIGNAL DETECTED</Text>
+                      </View>
+                      <Text style={[styles.eventTitle, { color: colors.text }]}>{match.teams}</Text>
+                      <View style={styles.oddsGrid}>
                         {Object.entries(match.odds).map(([k, v]) => (
-                          <View key={k} style={[styles.oddSmall, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                            <Text style={[styles.oddSmallK, { color: colors.muted }]}>{k}</Text>
-                            <Text style={[styles.oddSmallV, { color: colors.success }]}>{v as string}</Text>
+                          <View key={k} style={styles.oddSlot}>
+                            <Text style={[styles.oddKey, { color: colors.muted }]}>{k}</Text>
+                            <Text style={[styles.oddValue, { color: colors.cyber }]}>{v as string}</Text>
                           </View>
                         ))}
                       </View>
                     </TouchableOpacity>
-                  </MotiView>
-                ))}
+                  ))}
+                </ScrollView>
               </>
             )}
           </MotiView>
         )}
 
-        {step === 4 && selectedMatch && (
+        {step === 4 && (
           <MotiView
             key="s4"
-            from={{ opacity: 0, scale: 0.9 }}
+            from={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            style={styles.pane}
+            style={[styles.fullPane, { height }]}
           >
-            <TouchableOpacity onPress={() => setStep(3)} style={styles.backLink}>
-              <Ionicons name="chevron-back" size={20} color={colors.accent} />
-              <Text style={[styles.backText, { color: colors.accent }]}>BACK</Text>
-            </TouchableOpacity>
-            
-            <View style={[styles.confirmCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-              <LinearGradient
-                colors={[colors.tint, colors.accent]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.confirmHeader}
+            <View style={styles.verificationHeader}>
+              <MotiView
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ loop: true, duration: 1500 }}
               >
-                <Text style={styles.confirmLeague}>{selectedLeague}</Text>
-                <Text style={styles.confirmTeams}>{selectedMatch.teams}</Text>
-              </LinearGradient>
+                <MaterialCommunityIcons name="shield-lock-outline" size={80} color={colors.cyber} />
+              </MotiView>
+              <Text style={[styles.vTitle, { color: colors.text }]}>SECURITY<Text style={{ color: colors.cyber }}> LOCK</Text></Text>
+              <Text style={[styles.vSubtitle, { color: colors.muted }]}>PREDICTION WILL BE IMMUTABLE ONCE COMMITTED</Text>
+            </View>
 
-              <View style={styles.pickGrid}>
-                {Object.entries(selectedMatch.odds).map(([market, odds]) => (
+            <View style={styles.vContent}>
+              <View style={[styles.summaryPanel, { borderColor: colors.cyber + '40' }]}>
+                <LinearGradient
+                  colors={[colors.cyber + '10', 'transparent']}
+                  style={StyleSheet.absoluteFill}
+                />
+                <View style={styles.summaryItem}>
+                  <Text style={[styles.summaryLabel, { color: colors.muted }]}>TARGET EVENT</Text>
+                  <Text style={[styles.summaryValue, { color: colors.text }]}>{selectedMatch.teams}</Text>
+                </View>
+                <View style={[styles.summaryDivider, { backgroundColor: colors.border }]} />
+                <View style={styles.summaryItem}>
+                  <Text style={[styles.summaryLabel, { color: colors.muted }]}>DATA SOURCE</Text>
+                  <Text style={[styles.summaryValue, { color: colors.text }]}>{selectedLeague?.toUpperCase()}</Text>
+                </View>
+              </View>
+
+              <View style={styles.marketGrid}>
+                {Object.entries(selectedMatch.odds).map(([m, o]) => (
                   <TouchableOpacity
-                    key={market}
+                    key={m}
+                    onPress={() => setSelectedMarket(m)}
                     style={[
-                      styles.pickBtn, 
-                      { 
-                        backgroundColor: selectedMarket === market ? colors.tint + '10' : colors.background, 
-                        borderColor: selectedMarket === market ? colors.tint : colors.border 
-                      }
+                      styles.marketChoice, 
+                      { backgroundColor: colors.card, borderColor: selectedMarket === m ? colors.cyber : colors.border }
                     ]}
-                    onPress={() => setSelectedMarket(market)}
                   >
-                    <View>
-                      <Text style={[styles.pickLab, { color: colors.muted }]}>
-                        {market === '1' ? 'HOME' : market === 'X' ? 'DRAW' : 'AWAY'}
-                      </Text>
-                      <Text style={[styles.pickName, { color: colors.text }]}>
-                        {market === '1' ? selectedMatch.teams.split(' vs ')[0] : market === 'X' ? 'Tie' : selectedMatch.teams.split(' vs ')[1]}
-                      </Text>
-                    </View>
-                    <MotiText 
-                      animate={{ scale: selectedMarket === market ? 1.25 : 1 }}
-                      style={[styles.pickOdds, { color: colors.tint }]}
-                    >
-                      {odds as string}
-                    </MotiText>
+                    <Text style={[styles.marketM, { color: colors.muted }]}>{m === '1' ? 'HOME' : m === 'X' ? 'DRAW' : 'AWAY'}</Text>
+                    <Text style={[styles.marketO, { color: selectedMarket === m ? colors.cyber : colors.text }]}>{o as string}</Text>
+                    {selectedMarket === m && (
+                      <MotiView 
+                        from={{ scale: 0 }} 
+                        animate={{ scale: 1 }} 
+                        style={[styles.marketCheck, { backgroundColor: colors.cyber }]}
+                      >
+                        <Ionicons name="checkmark" size={14} color="#000" />
+                      </MotiView>
+                    )}
                   </TouchableOpacity>
                 ))}
               </View>
 
-              <View style={[styles.auditBox, { backgroundColor: colors.success + '10', borderColor: colors.success + '30' }]}>
-                <MaterialCommunityIcons name="shield-lock" size={24} color={colors.success} />
-                <Text style={[styles.auditText, { color: colors.success }]}>REAL-TIME AUDIT SECURED</Text>
-              </View>
-
               <TouchableOpacity
-                style={[styles.submitBtn, { backgroundColor: selectedMarket ? colors.tint : colors.muted + '20' }]}
+                style={[styles.commitBtn, { opacity: selectedMarket ? 1 : 0.3 }]}
                 disabled={!selectedMarket}
-                onPress={() => {
-                  alert('Analysis locked and published!');
-                  reset();
-                }}
+                onPress={() => { alert('ANALYSIS SECURED ON-CHAIN'); reset(); }}
               >
                 <LinearGradient
-                  colors={selectedMarket ? [colors.tint, colors.accent] : ['transparent', 'transparent']}
+                  colors={[colors.cyber, colors.plasma]}
                   start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.submitBtnGrad}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.commitGrad}
                 >
-                  <Text style={styles.submitBtnText}>LOCK ANALYSIS</Text>
+                  <Text style={styles.commitText}>COMMIT TO SYSTEM</Text>
+                  <MaterialCommunityIcons name="database-lock" size={20} color="#000" />
                 </LinearGradient>
               </TouchableOpacity>
             </View>
           </MotiView>
         )}
       </AnimatePresence>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -311,262 +312,271 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    padding: 28,
-    paddingTop: 40,
+  hudCorner: {
+    position: 'absolute',
+    width: 30,
+    height: 30,
+    zIndex: 10,
   },
-  title: {
-    fontSize: 40,
-    fontWeight: '900',
-    letterSpacing: -2,
+  fullPane: {
+    width: '100%',
+    paddingTop: 100,
   },
-  subtitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 8,
-    lineHeight: 24,
+  scannerHeader: {
+    paddingHorizontal: 35,
+    marginBottom: 40,
   },
-  stepperContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    marginBottom: 45,
-  },
-  stepItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  stepCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 2,
-  },
-  stepNum: {
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  stepBar: {
-    height: 4,
-    marginHorizontal: -2,
-    borderRadius: 2,
+  headerLine: {
+    height: 1,
+    width: '100%',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    marginBottom: 20,
     overflow: 'hidden',
   },
-  pane: {
-    paddingHorizontal: 28,
-    paddingBottom: 60,
+  scanLine: {
+    height: '100%',
+    width: '30%',
   },
-  paneTitle: {
-    fontSize: 26,
+  scannerTitle: {
+    fontSize: 36,
     fontWeight: '900',
-    marginBottom: 28,
-    letterSpacing: -0.5,
+    letterSpacing: -1,
+  },
+  scannerSubtitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    marginTop: 8,
+    letterSpacing: 2,
   },
   sportsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    paddingHorizontal: 25,
+  },
+  sportCardWrapper: {
+    width: '50%',
+    padding: 10,
   },
   sportCard: {
-    width: '48%',
-    borderRadius: 35,
-    padding: 28,
-    alignItems: 'center',
-    marginBottom: 18,
-    borderWidth: 1,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 12 },
-        shadowOpacity: 0.15,
-        shadowRadius: 25,
-      },
-      android: {
-        elevation: 10,
-      },
-    }),
-  },
-  sportIconBox: {
-    width: 80,
-    height: 80,
-    borderRadius: 28,
+    height: 160,
+    borderRadius: 24,
     justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  sportLabel: {
+    fontSize: 14,
+    fontWeight: '900',
+    marginTop: 15,
+    letterSpacing: 1,
+  },
+  sportCode: {
+    fontSize: 9,
+    fontWeight: '800',
+    marginTop: 4,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  cardAccent: {
+    position: 'absolute',
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  backBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
   },
-  sportLabel: {
+  backText: {
+    fontSize: 12,
+    fontWeight: '900',
+    marginLeft: 10,
+    letterSpacing: 1,
+  },
+  listPadding: {
+    paddingHorizontal: 35,
+    paddingBottom: 100,
+  },
+  leagueRow: {
+    height: 80,
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+  },
+  leagueInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  leagueCode: {
+    fontSize: 10,
+    fontWeight: '900',
+    marginRight: 20,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  leagueText: {
     fontSize: 16,
     fontWeight: '900',
     letterSpacing: 0.5,
   },
-  backLink: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 28,
-  },
-  backText: {
-    fontSize: 14,
-    fontWeight: '900',
-    marginLeft: 6,
-    letterSpacing: 1,
-  },
-  leagueRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 28,
-    borderRadius: 30,
-    marginBottom: 16,
-    borderWidth: 1,
-  },
-  leagueName: {
-    fontSize: 19,
-    fontWeight: '900',
-  },
-  leagueIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingBottom: 100,
   },
-  loader: {
-    padding: 120,
-    alignItems: 'center',
+  loadingHex: {
+    width: 100,
+    height: 100,
+    borderWidth: 3,
+    borderRadius: 20,
+    transform: [{ rotate: '45deg' }],
   },
-  loaderText: {
-    marginTop: 30,
-    fontWeight: '900',
-    fontSize: 14,
-    letterSpacing: 2,
-  },
-  matchCard: {
-    padding: 28,
-    borderRadius: 35,
-    marginBottom: 20,
-    borderWidth: 1,
-  },
-  matchInfo: {
-    fontSize: 21,
-    fontWeight: '900',
-    marginBottom: 28,
-    letterSpacing: -0.5,
-  },
-  oddsLine: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  oddSmall: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderRadius: 18,
-    marginHorizontal: 5,
-    borderWidth: 1,
-  },
-  oddSmallK: {
+  loadingText: {
+    marginTop: 50,
     fontSize: 12,
     fontWeight: '900',
-  },
-  oddSmallV: {
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  confirmCard: {
-    borderRadius: 45,
-    borderWidth: 1,
-    overflow: 'hidden',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 30 },
-        shadowOpacity: 0.3,
-        shadowRadius: 50,
-      },
-      android: {
-        elevation: 20,
-      },
-    }),
-  },
-  confirmHeader: {
-    padding: 45,
-    alignItems: 'center',
-  },
-  confirmLeague: {
-    fontSize: 14,
-    fontWeight: '900',
-    color: 'rgba(255,255,255,0.85)',
-    textTransform: 'uppercase',
     letterSpacing: 3,
+  },
+  eventCard: {
+    padding: 25,
+    borderRadius: 28,
+    borderWidth: 1,
+    marginBottom: 20,
+  },
+  eventHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 15,
   },
-  confirmTeams: {
-    fontSize: 30,
+  liveIndicator: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 10,
+  },
+  eventTime: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 1,
+  },
+  eventTitle: {
+    fontSize: 20,
     fontWeight: '900',
-    color: '#fff',
-    textAlign: 'center',
-    letterSpacing: -1,
+    marginBottom: 20,
   },
-  pickGrid: {
-    padding: 28,
-  },
-  pickBtn: {
+  oddsGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  oddSlot: {
     alignItems: 'center',
-    padding: 24,
-    borderRadius: 28,
-    borderWidth: 2,
-    marginBottom: 16,
   },
-  pickLab: {
-    fontSize: 11,
+  oddKey: {
+    fontSize: 9,
     fontWeight: '900',
-    marginBottom: 6,
-    letterSpacing: 1.5,
+    marginBottom: 4,
   },
-  pickName: {
+  oddValue: {
     fontSize: 18,
     fontWeight: '900',
   },
-  pickOdds: {
-    fontSize: 26,
-    fontWeight: '900',
-  },
-  auditBox: {
-    flexDirection: 'row',
+  verificationHeader: {
     alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 28,
-    padding: 20,
-    borderRadius: 24,
-    marginBottom: 28,
-    borderWidth: 1,
+    paddingHorizontal: 40,
+    marginBottom: 40,
   },
-  auditText: {
-    fontSize: 12,
+  vTitle: {
+    fontSize: 32,
     fontWeight: '900',
-    marginLeft: 12,
-    letterSpacing: 1.5,
+    marginTop: 20,
+    letterSpacing: -1,
   },
-  submitBtn: {
-    margin: 28,
-    marginTop: 0,
-    borderRadius: 28,
+  vSubtitle: {
+    fontSize: 10,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginTop: 10,
+    lineHeight: 16,
+    letterSpacing: 1,
+  },
+  vContent: {
+    paddingHorizontal: 35,
+  },
+  summaryPanel: {
+    padding: 25,
+    borderRadius: 24,
+    borderWidth: 1,
+    marginBottom: 30,
     overflow: 'hidden',
   },
-  submitBtnGrad: {
-    padding: 24,
+  summaryItem: {
+    marginVertical: 5,
+  },
+  summaryLabel: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
+    marginBottom: 6,
+  },
+  summaryValue: {
+    fontSize: 16,
+    fontWeight: '900',
+  },
+  summaryDivider: {
+    height: 1,
+    marginVertical: 15,
+    opacity: 0.5,
+  },
+  marketGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 40,
+  },
+  marketChoice: {
+    width: '31%',
+    height: 90,
+    borderRadius: 18,
+    borderWidth: 2,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  submitBtnText: {
-    color: '#fff',
-    fontSize: 18,
+  marketM: {
+    fontSize: 9,
     fontWeight: '900',
-    letterSpacing: 2,
+    marginBottom: 4,
+  },
+  marketO: {
+    fontSize: 20,
+    fontWeight: '900',
+  },
+  marketCheck: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  commitBtn: {
+    height: 70,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  commitGrad: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  commitText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: '900',
+    letterSpacing: 1,
+    marginRight: 10,
   },
 });

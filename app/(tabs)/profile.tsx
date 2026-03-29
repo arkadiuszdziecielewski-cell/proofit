@@ -8,159 +8,172 @@ import { LineChart } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotiView, MotiText } from 'moti';
+import { BlurView } from 'expo-blur';
 
 const USER_STATS = {
-  name: 'Jan Bet',
+  name: 'JAN BET',
   rank: 'ELITE ANALYST',
   avatar: 'https://i.pravatar.cc/150?u=1',
   yield: '+24.5%',
   avgOdds: '1.95',
   winRate: '68%',
   totalTips: 120,
-  profit: '+1,450 PLN',
+  balance: '14,250.00',
+  currency: 'PLN',
+  id: 'USER-8829-QX',
 };
 
 const CHART_DATA = [50, 40, 65, 55, 75, 85, 80, 100, 110, 105, 125, 140];
 
 const HISTORY = [
-  { id: '1', match: 'Real Madrid vs Barcelona', tip: 'Over 2.5', odds: '1.85', result: 'win', date: '28 MAR' },
-  { id: '2', match: 'Bayern vs BVB', tip: '1', odds: '1.60', result: 'loss', date: '27 MAR' },
-  { id: '3', match: 'Lakers vs Warriors', tip: 'Over 220.5', odds: '1.90', result: 'win', date: '26 MAR' },
-  { id: '4', match: 'Iga Świątek vs Aryna Sabalenka', tip: '1', odds: '1.65', result: 'win', date: '25 MAR' },
+  { id: '1', match: 'Real Madrid vs Barcelona', tip: 'Over 2.5', odds: '1.85', result: 'win', date: '28 MAR', profit: '+85.00' },
+  { id: '2', match: 'Bayern vs BVB', tip: '1', odds: '1.60', result: 'loss', date: '27 MAR', profit: '-100.00' },
+  { id: '3', match: 'Lakers vs Warriors', tip: 'Over 220.5', odds: '1.90', result: 'win', date: '26 MAR', profit: '+90.00' },
 ];
 
 export default function ProfileScreen() {
   const { width } = useWindowDimensions();
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? 'dark';
   const colors = Colors[colorScheme];
 
-  const renderHistoryItem = ({ item, index }: { item: typeof HISTORY[0], index: number }) => (
-    <MotiView
-      from={{ opacity: 0, translateY: 20 }}
-      animate={{ opacity: 1, translateY: 0 }}
-      transition={{ delay: index * 100 }}
-    >
-      <TouchableOpacity style={[styles.historyCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={[styles.historyIcon, { backgroundColor: item.result === 'win' ? colors.success + '15' : colors.error + '15' }]}>
-          <Ionicons 
-            name={item.result === 'win' ? "trending-up" : "trending-down"} 
-            size={20} 
-            color={item.result === 'win' ? colors.success : colors.error} 
-          />
-        </View>
-        <View style={styles.historyContent}>
-          <Text style={[styles.historyMatch, { color: colors.text }]}>{item.match}</Text>
-          <Text style={[styles.historyTip, { color: colors.muted }]}>{item.tip} @ {item.odds}</Text>
-        </View>
-        <View style={styles.historyRight}>
-          <Text style={[styles.historyResult, { color: item.result === 'win' ? colors.success : colors.error }]}>
-            {item.result === 'win' ? 'WIN' : 'LOSS'}
-          </Text>
-          <Text style={[styles.historyDate, { color: colors.muted }]}>{item.date}</Text>
-        </View>
-      </TouchableOpacity>
-    </MotiView>
-  );
-
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
-      <LinearGradient
-        colors={[colors.tint, colors.accent]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.header}
-      >
-        <View style={styles.headerTop}>
-          <TouchableOpacity style={styles.headerIcon}>
-            <Ionicons name="share-social-outline" size={22} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerIcon}>
-            <Ionicons name="settings-outline" size={22} color="#fff" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.profileSection}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
           <MotiView
-            from={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: 'spring' }}
-            style={styles.avatarWrapper}
+            from={{ opacity: 0, translateY: -20 }}
+            animate={{ opacity: 1, translateY: 0 }}
+            style={styles.profileMeta}
           >
-            <Image source={{ uri: USER_STATS.avatar }} style={styles.avatar} />
-            <MotiView 
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ loop: true, duration: 2000 }}
-              style={[styles.onlineIndicator, { borderColor: colors.accent }]} 
-            />
+            <Text style={[styles.idText, { color: colors.cyber }]}>{USER_STATS.id}</Text>
+            <View style={[styles.statusTag, { backgroundColor: colors.success + '20' }]}>
+              <View style={[styles.statusDot, { backgroundColor: colors.success }]} />
+              <Text style={[styles.statusText, { color: colors.success }]}>ACTIVE</Text>
+            </View>
           </MotiView>
-          <MotiText from={{ opacity: 0, translateY: 10 }} animate={{ opacity: 1, translateY: 0 }} style={styles.userName}>{USER_STATS.name}</MotiText>
-          <View style={styles.rankBadge}>
-            <MaterialCommunityIcons name="star-circle" size={16} color={colors.gold} />
-            <Text style={[styles.rankText, { color: colors.gold }]}>{USER_STATS.rank}</Text>
+        </View>
+
+        <View style={styles.passportContainer}>
+          <MotiView
+            from={{ opacity: 0, rotateX: '45deg', scale: 0.9 }}
+            animate={{ opacity: 1, rotateX: '0deg', scale: 1 }}
+            transition={{ type: 'spring', damping: 12 }}
+            style={[styles.passport, { borderColor: colors.cyber + '40' }]}
+          >
+            <LinearGradient
+              colors={[colors.cyber + '20', 'transparent', colors.plasma + '10']}
+              style={StyleSheet.absoluteFill}
+            />
+            
+            <View style={styles.passportTop}>
+              <View style={styles.avatarWrapper}>
+                <Image source={{ uri: USER_STATS.avatar }} style={styles.avatar} />
+                <View style={[styles.avatarFrame, { borderColor: colors.cyber }]} />
+              </View>
+              <View style={styles.mainInfo}>
+                <Text style={styles.userName}>{USER_STATS.name}</Text>
+                <View style={styles.rankBadge}>
+                  <MaterialCommunityIcons name="seal-variant" size={14} color={colors.gold} />
+                  <Text style={[styles.rankText, { color: colors.gold }]}>{USER_STATS.rank}</Text>
+                </View>
+                <Text style={[styles.memberSince, { color: colors.muted }]}>MEMBER SINCE 2024</Text>
+              </View>
+            </View>
+
+            <View style={styles.passportDivider}>
+              <View style={[styles.dot, { backgroundColor: colors.cyber }]} />
+              <View style={[styles.line, { backgroundColor: colors.cyber + '20' }]} />
+              <View style={[styles.dot, { backgroundColor: colors.cyber }]} />
+            </View>
+
+            <View style={styles.walletSection}>
+              <View>
+                <Text style={[styles.label, { color: colors.muted }]}>AVAILABLE CAPITAL</Text>
+                <View style={styles.balanceRow}>
+                  <Text style={styles.balance}>{USER_STATS.balance}</Text>
+                  <Text style={[styles.currency, { color: colors.cyber }]}>{USER_STATS.currency}</Text>
+                </View>
+              </View>
+              <TouchableOpacity style={[styles.depositBtn, { backgroundColor: colors.cyber }]}>
+                <Ionicons name="add" size={24} color="#000" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.gridStats}>
+              <View style={styles.gridItem}>
+                <Text style={[styles.label, { color: colors.muted }]}>YIELD</Text>
+                <Text style={[styles.gridVal, { color: colors.success }]}>{USER_STATS.yield}</Text>
+              </View>
+              <View style={styles.gridItem}>
+                <Text style={[styles.label, { color: colors.muted }]}>WIN RATE</Text>
+                <Text style={styles.gridVal}>{USER_STATS.winRate}</Text>
+              </View>
+              <View style={styles.gridItem}>
+                <Text style={[styles.label, { color: colors.muted }]}>ODDS AVG</Text>
+                <Text style={styles.gridVal}>{USER_STATS.avgOdds}</Text>
+              </View>
+            </View>
+          </MotiView>
+        </View>
+
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>GROWTH TELEMETRY</Text>
+            <View style={[styles.liveTag, { borderColor: colors.success }]}>
+              <Text style={[styles.liveTagText, { color: colors.success }]}>LIVE</Text>
+            </View>
+          </View>
+          
+          <View style={[styles.chartContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <LineChart
+              style={{ height: 180 }}
+              data={CHART_DATA}
+              svg={{ 
+                stroke: colors.cyber, 
+                strokeWidth: 4,
+                strokeLinecap: 'round',
+              }}
+              contentInset={{ top: 20, bottom: 20, left: 10, right: 10 }}
+              curve={shape.curveNatural}
+            />
+            <LinearGradient
+              colors={[colors.cyber + '15', 'transparent']}
+              style={StyleSheet.absoluteFill}
+            />
           </View>
         </View>
-      </LinearGradient>
 
-      <MotiView
-        from={{ opacity: 0, translateY: 40 }}
-        animate={{ opacity: 1, translateY: 0 }}
-        transition={{ delay: 200 }}
-        style={[styles.statsDashboard, { backgroundColor: colors.card, borderColor: colors.border }]}
-      >
-        <View style={styles.statBox}>
-          <Text style={[styles.statVal, { color: colors.success }]}>{USER_STATS.yield}</Text>
-          <Text style={[styles.statLab, { color: colors.muted }]}>YIELD</Text>
-        </View>
-        <View style={[styles.statSep, { backgroundColor: colors.border }]} />
-        <View style={styles.statBox}>
-          <Text style={[styles.statVal, { color: colors.text }]}>{USER_STATS.winRate}</Text>
-          <Text style={[styles.statLab, { color: colors.muted }]}>WIN RATE</Text>
-        </View>
-        <View style={[styles.statSep, { backgroundColor: colors.border }]} />
-        <View style={styles.statBox}>
-          <Text style={[styles.statVal, { color: colors.text }]}>{USER_STATS.avgOdds}</Text>
-          <Text style={[styles.statLab, { color: colors.muted }]}>AVG ODDS</Text>
-        </View>
-      </MotiView>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Portfolio Growth</Text>
-          <View style={[styles.periodBadge, { backgroundColor: colors.tint + '15' }]}>
-            <Text style={[styles.periodText, { color: colors.tint }]}>LAST 30D</Text>
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>IMMUTABLE TRANSACTION LOG</Text>
+          <View style={[styles.logContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            {HISTORY.map((item, idx) => (
+              <MotiView
+                key={item.id}
+                from={{ opacity: 0, translateX: -20 }}
+                animate={{ opacity: 1, translateX: 0 }}
+                transition={{ delay: 300 + idx * 100 }}
+                style={[styles.logItem, { borderBottomColor: colors.border }]}
+              >
+                <View style={styles.logLeft}>
+                  <Text style={[styles.logMatch, { color: colors.text }]}>{item.match}</Text>
+                  <Text style={[styles.logDetails, { color: colors.muted }]}>{item.tip} @ {item.odds}</Text>
+                </View>
+                <View style={styles.logRight}>
+                  <Text style={[styles.logProfit, { color: item.result === 'win' ? colors.success : colors.error }]}>
+                    {item.profit}
+                  </Text>
+                  <Text style={[styles.logDate, { color: colors.muted }]}>{item.date}</Text>
+                </View>
+              </MotiView>
+            ))}
+            <TouchableOpacity style={styles.viewMoreBtn}>
+              <Text style={[styles.viewMoreText, { color: colors.cyber }]}>ACCESS FULL DATABASE</Text>
+              <Ionicons name="chevron-down" size={16} color={colors.cyber} />
+            </TouchableOpacity>
           </View>
         </View>
-        <View style={[styles.chartContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
-          <LineChart
-            style={{ height: 160 }}
-            data={CHART_DATA}
-            svg={{ 
-              stroke: colors.tint, 
-              strokeWidth: 4,
-              strokeLinecap: 'round',
-            }}
-            contentInset={{ top: 20, bottom: 20, left: 10, right: 10 }}
-            curve={shape.curveNatural}
-          />
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Verified Activity</Text>
-          <TouchableOpacity style={styles.row}>
-            <Text style={[styles.seeMore, { color: colors.tint }]}>Full Log</Text>
-            <Ionicons name="chevron-forward" size={14} color={colors.tint} />
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          data={HISTORY}
-          renderItem={renderHistoryItem}
-          keyExtractor={(item) => item.id}
-          scrollEnabled={false}
-        />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -169,202 +182,244 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    paddingBottom: 80,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
+    paddingTop: Platform.OS === 'ios' ? 70 : 50,
+    paddingHorizontal: 25,
   },
-  headerTop: {
+  profileMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    marginBottom: 20,
-  },
-  headerIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 15,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    justifyContent: 'center',
     alignItems: 'center',
+  },
+  idText: {
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 2,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
+  },
+  statusTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1,
+  },
+  passportContainer: {
+    padding: 25,
+    marginTop: 10,
+  },
+  passport: {
+    borderRadius: 32,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    padding: 25,
+    overflow: 'hidden',
+    backgroundColor: '#050505',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#00F2FF',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.2,
+        shadowRadius: 20,
+      },
+    }),
   },
-  profileSection: {
+  passportTop: {
+    flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 25,
   },
   avatarWrapper: {
     position: 'relative',
-    marginBottom: 20,
   },
   avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 44,
-    borderWidth: 4,
-    borderColor: 'rgba(255,255,255,0.25)',
+    width: 90,
+    height: 90,
+    borderRadius: 20,
   },
-  onlineIndicator: {
+  avatarFrame: {
     position: 'absolute',
-    bottom: 4,
-    right: 4,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#10B981',
-    borderWidth: 4,
+    top: -5,
+    left: -5,
+    right: -5,
+    bottom: -5,
+    borderWidth: 1,
+    borderRadius: 24,
+    opacity: 0.5,
+  },
+  mainInfo: {
+    marginLeft: 20,
+    flex: 1,
   },
   userName: {
-    fontSize: 32,
-    fontWeight: '900',
     color: '#fff',
+    fontSize: 28,
+    fontWeight: '900',
     letterSpacing: -1,
   },
   rankBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginTop: 12,
+    marginTop: 4,
   },
   rankText: {
     fontSize: 12,
     fontWeight: '900',
-    marginLeft: 8,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
+    marginLeft: 6,
+    letterSpacing: 1,
   },
-  statsDashboard: {
-    flexDirection: 'row',
-    marginHorizontal: 24,
-    marginTop: -40,
-    borderRadius: 35,
-    padding: 28,
-    borderWidth: 1,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 15 },
-        shadowOpacity: 0.2,
-        shadowRadius: 30,
-      },
-      android: {
-        elevation: 12,
-      },
-    }),
-  },
-  statBox: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statSep: {
-    width: 1,
-    height: '70%',
-    alignSelf: 'center',
-    opacity: 0.3,
-  },
-  statVal: {
-    fontSize: 24,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  statLab: {
+  memberSince: {
     fontSize: 10,
-    fontWeight: '900',
+    fontWeight: '800',
     marginTop: 8,
     letterSpacing: 1,
   },
+  passportDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    marginHorizontal: 10,
+  },
+  walletSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  label: {
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 2,
+    marginBottom: 6,
+  },
+  balanceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  balance: {
+    color: '#fff',
+    fontSize: 32,
+    fontWeight: '900',
+    letterSpacing: -1,
+  },
+  currency: {
+    fontSize: 14,
+    fontWeight: '800',
+    marginLeft: 8,
+  },
+  depositBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  gridStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  gridItem: {
+    flex: 1,
+  },
+  gridVal: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '900',
+  },
   section: {
-    marginTop: 45,
-    paddingHorizontal: 24,
+    paddingHorizontal: 25,
+    marginBottom: 35,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginBottom: 15,
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 11,
     fontWeight: '900',
-    letterSpacing: -0.5,
+    letterSpacing: 3,
   },
-  periodBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 10,
+  liveTag: {
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
-  periodText: {
-    fontSize: 12,
+  liveTagText: {
+    fontSize: 8,
     fontWeight: '900',
   },
   chartContainer: {
-    borderRadius: 35,
+    borderRadius: 24,
     borderWidth: 1,
-    padding: 24,
+    padding: 15,
+    overflow: 'hidden',
   },
-  historyCard: {
+  logContainer: {
+    borderRadius: 24,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  logItem: {
     flexDirection: 'row',
-    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 20,
-    borderRadius: 28,
-    borderWidth: 1,
-    marginBottom: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.1,
-        shadowRadius: 15,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
+    borderBottomWidth: 1,
   },
-  historyIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 18,
-  },
-  historyContent: {
+  logLeft: {
     flex: 1,
   },
-  historyMatch: {
-    fontSize: 17,
+  logMatch: {
+    fontSize: 15,
     fontWeight: '900',
-    letterSpacing: -0.3,
   },
-  historyTip: {
-    fontSize: 14,
+  logDetails: {
+    fontSize: 12,
     fontWeight: '700',
     marginTop: 4,
   },
-  historyRight: {
+  logRight: {
     alignItems: 'flex-end',
   },
-  historyResult: {
-    fontSize: 15,
+  logProfit: {
+    fontSize: 14,
     fontWeight: '900',
-    letterSpacing: 0.5,
   },
-  historyDate: {
-    fontSize: 12,
+  logDate: {
+    fontSize: 10,
     fontWeight: '800',
     marginTop: 4,
   },
-  seeMore: {
-    fontSize: 14,
+  viewMoreBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
+  },
+  viewMoreText: {
+    fontSize: 10,
     fontWeight: '900',
-    marginRight: 4,
+    marginRight: 8,
+    letterSpacing: 1,
   },
 });
