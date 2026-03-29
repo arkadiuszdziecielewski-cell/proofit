@@ -1,40 +1,37 @@
-const tintColorLight = '#00F2FF'; 
-const tintColorDark = '#00F2FF'; 
+const tintColorLight = '#007AFF'; // iOS Blue
+const tintColorDark = '#0A84FF'; 
 
 export default {
   light: {
-    text: '#050505',
-    background: '#FFFFFF',
+    text: '#1C1C1E',
+    background: '#F2F2F7',
     tint: tintColorLight,
-    tabIconDefault: '#CCC',
+    tabIconDefault: '#C7C7CC',
     tabIconSelected: tintColorLight,
-    card: '#F5F5F5',
-    border: '#EEE',
-    muted: '#666',
-    success: '#00FF94',
-    error: '#FF005C',
-    gold: '#FFD700',
-    accent: '#FF00E5',
-    glass: 'rgba(255, 255, 255, 0.03)',
-    glassBorder: 'rgba(255, 255, 255, 0.08)',
+    card: '#FFFFFF',
+    border: '#E5E5EA',
+    muted: '#8E8E93',
+    success: '#34C759',
+    error: '#FF3B30',
+    gold: '#FFCC00',
+    accent: '#5856D6', // Purple
+    glass: 'rgba(255, 255, 255, 0.7)',
+    glassBorder: 'rgba(255, 255, 255, 0.3)',
   },
   dark: {
     text: '#FFFFFF',
-    background: '#020202', // Nawet głębsza czerń
+    background: '#000000',
     tint: tintColorDark,
-    tabIconDefault: '#1A1A1A',
+    tabIconDefault: '#3A3A3C',
     tabIconSelected: tintColorDark,
-    card: '#080808', // Bardziej techniczna szarość
-    border: '#151515',
-    muted: '#555',
-    success: '#00FF94', // Neon Green
-    error: '#FF005C', // Neon Red/Pink
-    gold: '#FFD700', 
-    accent: '#FF00E5', // Neon Magenta
-    cyber: '#00F2FF', // Electric Cyan
-    plasma: '#7000FF', // Plasma Purple
-    matrix: '#00FF41', // Matrix Green
-    glass: 'rgba(255, 255, 255, 0.02)',
-    glassBorder: 'rgba(255, 255, 255, 0.05)',
+    card: '#1C1C1E',
+    border: '#2C2C2E',
+    muted: '#8E8E93',
+    success: '#30D158',
+    error: '#FF453A',
+    gold: '#FFD60A',
+    accent: '#5E5CE6',
+    glass: 'rgba(28, 28, 30, 0.7)',
+    glassBorder: 'rgba(255, 255, 255, 0.1)',
   },
 };

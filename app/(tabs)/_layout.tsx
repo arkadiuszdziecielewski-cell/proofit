@@ -1,52 +1,55 @@
 import * as React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Tabs } from 'expo-router';
+import { 
+  Trophy, 
+  PlusCircle, 
+  UserCircle2 
+} from 'lucide-react-native';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
-
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme() ?? 'light';
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+        tabBarActiveTintColor: Colors[colorScheme].tint,
+        tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
+        tabBarStyle: {
+          backgroundColor: Colors[colorScheme].card,
+          borderTopColor: Colors[colorScheme].border,
+          height: Platform.OS === 'ios' ? 88 : 68,
+          paddingBottom: Platform.OS === 'ios' ? 30 : 12,
+          paddingTop: 12,
+        },
+        headerShown: false,
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Arena',
-          tabBarIcon: ({ color }) => <TabBarIcon name="trophy" color={color} />,
+          tabBarIcon: ({ color }) => <Trophy size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="add-tip"
         options={{
-          title: 'Dodaj Typ',
-          tabBarIcon: ({ color }) => <TabBarIcon name="plus-circle" color={color} />,
+          title: 'Verify',
+          tabBarIcon: ({ color }) => <PlusCircle size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profil',
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <UserCircle2 size={24} color={color} />,
         }}
       />
     </Tabs>
   );
 }
+
+import { Platform } from 'react-native';
