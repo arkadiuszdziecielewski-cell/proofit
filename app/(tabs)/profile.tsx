@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Platform, Dimensions } from 'react-native';
+import { StyleSheet, ScrollView, Image, FlatList, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
@@ -7,8 +7,6 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { LineChart } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const { width } = Dimensions.get('window');
 
 const USER_STATS = {
   name: 'Jan Bet',
@@ -31,6 +29,7 @@ const HISTORY = [
 ];
 
 export default function ProfileScreen() {
+  const { width } = useWindowDimensions();
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
 

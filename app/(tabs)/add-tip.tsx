@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Platform, Dimensions } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity, TextInput, ActivityIndicator, Platform, useWindowDimensions } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const { width } = Dimensions.get('window');
 
 const SPORTS = [
   { id: 'soccer', name: 'Piłka Nożna', icon: 'sports-soccer' },
@@ -32,6 +30,7 @@ const MOCK_MATCHES: Record<string, any[]> = {
 };
 
 export default function AddTipScreen() {
+  const { width } = useWindowDimensions();
   const colorScheme = useColorScheme() ?? 'light';
   const colors = Colors[colorScheme];
 
